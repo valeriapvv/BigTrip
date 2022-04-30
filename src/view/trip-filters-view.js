@@ -28,6 +28,7 @@ export default class TripFiltersView {
   getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
+      this.element.style.marginTop = '36px';
     }
 
     return this.element;
