@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import View from './view.js';
 
 const createTripInfoTitleTemplate = (points = ['Amsterdam', 'Chamonix', 'Geneva']) => {
   const taskPath = points.join(' &mdash; ');
@@ -6,20 +6,8 @@ const createTripInfoTitleTemplate = (points = ['Amsterdam', 'Chamonix', 'Geneva'
   return `<h1 class="trip-info__title">${taskPath}</h1>`;
 };
 
-export default class TripInfoTitleView {
+export default class TripInfoTitleView extends View {
   getTemplate() {
     return createTripInfoTitleTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

@@ -1,21 +1,9 @@
-import {createElement} from '../render.js';
+import View from './view.js';
 
 const createTripEventListTemplate = () => '<ul class="trip-events__list"></ul>';
 
-export default class TripEventListView {
+export default class TripEventListView extends View {
   getTemplate() {
     return createTripEventListTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

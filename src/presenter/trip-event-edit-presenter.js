@@ -1,12 +1,24 @@
 import TripEventEditView from '../view/trip-event-edit-view.js';
-import {render} from '../render.js';
+import {render, RenderPosition} from '../render.js';
 
 export default class TripEventEditPresenter {
-  getEditFormSite() {
-    return document.querySelector('.trip-events__list');
-  }
+  setFormResetHadler = (onReset) => {
+    const formResetHandler = () => {
+      onReset();
 
-  init = () => {
-    render(new TripEventEditView(), this.getEditFormSite(), 'afterbegin');
+      this.tripEventForm.removeEventListener('reset', formResetHandler);
+      this.tripEventForm.remove();
+    };
+
+    return formResetHandler;
+  };
+
+  init = (tripEventEditContainer, onReset) => {
+    this.tripEventEditComponent = new TripEventEditView();
+    this.tripEventForm = this.tripEventEditComponent.getElement();
+
+    this.tripEventForm.addEventListener('reset', this.setFormResetHadler(onReset));
+
+    render(this.tripEventEditComponent, tripEventEditContainer, RenderPosition.AFTERBEGIN);
   };
 }

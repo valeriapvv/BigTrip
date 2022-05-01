@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import View from './view.js';
 
 const createTripEventTemplate = () => (
   `<li class="trip-events__item">
@@ -40,20 +40,8 @@ const createTripEventTemplate = () => (
      </li>`
 );
 
-export default class TripEventView {
+export default class TripEventView extends View {
   getTemplate() {
     return createTripEventTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import View from './view.js';
 
 const createTripInfoSectionTemplate = () => (
   `<section class="trip-main__trip-info trip-info">
@@ -6,20 +6,8 @@ const createTripInfoSectionTemplate = () => (
    </section>`
 );
 
-export default class TripInfoSectionView {
+export default class TripInfoSectionView extends View {
   getTemplate() {
     return createTripInfoSectionTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
