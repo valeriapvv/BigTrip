@@ -1,4 +1,4 @@
-import TripEventEditPresenter from './trip-event-edit-presenter.js';
+import TripEventEditPresenter from './trip-event-creation-presenter.js';
 
 const eventAddButton = document.querySelector('.trip-main__event-add-btn');
 

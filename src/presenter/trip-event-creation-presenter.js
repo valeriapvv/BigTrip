@@ -1,4 +1,4 @@
-import TripEventEditView from '../view/trip-event-edit-view.js';
+import TripEventEditView from '../view/trip-event-creation-view.js';
 import {render, RenderPosition} from '../render.js';
 
 export default class TripEventEditPresenter {

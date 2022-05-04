@@ -2,6 +2,7 @@ import TripInfoPresenter from './presenter/trip-info-presenter.js';
 import TripEventsBodyPresenter from './presenter/trip-events-body-presenter.js';
 import TripFiltersPresenter from './presenter/trip-filters-presenter.js';
 import AddEventButtonPresenter from './presenter/add-event-button-presenter.js';
+import TripEventsModel from './model/trip-events-model.js';
 
 const tripMainSite = document.querySelector('.trip-main');
 const tripFiltersSite = tripMainSite.querySelector('.trip-controls__filters');
@@ -15,7 +16,10 @@ const addEventButtonPresenter = new AddEventButtonPresenter();
 tripFiltersPresenter.init(tripFiltersSite);
 tripInfoPresenter.init(tripMainSite);
 
-tripEventsBodyPresenter.init(tripEventsBodySite);
+tripEventsBodyPresenter.init(tripEventsBodySite, new TripEventsModel());
 
 addEventButtonPresenter.init(document.querySelector('.trip-events__list'));
+
+// const dayjs = require('dayjs');
+// console.log(dayjs())
 
