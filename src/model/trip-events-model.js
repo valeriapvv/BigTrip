@@ -1,4 +1,4 @@
-import {generatePoint} from '../data/trip-point-generation.js';
+import {generatePoint, destinations, offers} from '../data/trip-point-generation.js';
 
 export default class TripEventsModel {
   tripEvents = (() => {
@@ -9,5 +9,12 @@ export default class TripEventsModel {
       return generatePoint(id);});
   })();
 
+  destinations = destinations;
+  offers = offers;
+
   getTripEvents = () => this.tripEvents;
+
+  getDestinations = () => this.destinations;
+  getOffers = () => this.offers;
+
 }

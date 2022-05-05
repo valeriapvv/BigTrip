@@ -1,5 +1,5 @@
 import View from './view.js';
-import {TypeOffer} from '../data/trip-point-generation.js';
+import {offers as allOffers, findTypeOffers} from '../data/trip-point-generation.js';
 
 const dayjs = require('dayjs');
 
@@ -20,7 +20,7 @@ const createTripEventTemplate = (tripEvent) => {
   const minutes = duration % 60;
   const humanizedDuration = `${hours >= 1 ? `${hours  }H` : ''} ${minutes < 10 ? '0' : ''}${minutes}M`;
 
-  const offerList = TypeOffer[type.toUpperCase()].offers.filter((it) => offers.includes(it.id));
+  const offerList = findTypeOffers(type).filter(({id}) => offers.includes(id));
 
   return (`<li class="trip-events__item">
          <div class="event">

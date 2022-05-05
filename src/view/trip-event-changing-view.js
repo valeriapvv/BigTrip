@@ -1,6 +1,6 @@
 import View from './view.js';
-import {TypeOffer} from '../data/trip-point-generation.js';
-import {types} from '../data/data.js';
+import {findTypeOffers} from '../data/trip-point-generation.js';
+import {TYPES} from '../data/data.js';
 
 const dayjs = require('dayjs');
 
@@ -17,8 +17,7 @@ const createTripEventChangingTemplate = (tripEvent) => {
 
   const startTime = dayjs(dateFrom).format('DD/MM/YY HH:mm');
   const endTime = dayjs(dateTo).format('DD/MM/YY HH:mm');
-
-  const allOffers = TypeOffer[type.toUpperCase()].offers;
+  const typeOffers = findTypeOffers(type);
 
   const isExistPictureList = !!(pictures && pictures.length);
 
@@ -37,7 +36,7 @@ const createTripEventChangingTemplate = (tripEvent) => {
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
 
-                ${types.map((it) => (`
+                ${TYPES.map((it) => (`
                 	<div class="event__type-item">
                   	<input id="event-type-${it}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${it}"
                   	${it === type ? 'checked' : ''}>
@@ -87,14 +86,14 @@ const createTripEventChangingTemplate = (tripEvent) => {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-            	${allOffers.map((it, index) => (`
+            	${typeOffers.map(({id, title, price}, index) => (`
             			<div class="event__offer-selector">
                     <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${index+1}" type="checkbox" name="event-offer-luggage"
-                    	${offers.includes(it.id) ? 'checked' : ''}>
+                    	${offers.includes(id) ? 'checked' : ''}>
                     <label class="event__offer-label" for="event-offer-luggage-${index+1}">
-                      <span class="event__offer-title">${it.title}</span>
+                      <span class="event__offer-title">${title}</span>
                               &plus;&euro;&nbsp;
-                      <span class="event__offer-price">${it.price}</span>
+                      <span class="event__offer-price">${price}</span>
                     </label>
                   </div>
             			`)).join('')}
@@ -108,8 +107,8 @@ const createTripEventChangingTemplate = (tripEvent) => {
       (`
             		<div class="event__photos-container">
           				<div class="event__photos-tape">
-          					${pictures.map((it) => (`
-          						<img class="event__photo" src="${it.src}" alt="${it.description}">
+          					${pictures.map(({src, description}) => (`
+          						<img class="event__photo" src="${src}" alt="${description}">
                       `)).join('')}
             				
           				</div>

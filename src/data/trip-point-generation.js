@@ -1,7 +1,16 @@
 import {getRandomInteger, getRandomArrayElement, generateRandomArray, createRandomUniqueIntegerGenerator} from '../utils.js';
-import {types, points} from './data.js';
+import {TYPES, POINTS} from './data.js';
 
 const dayjs = require('dayjs');
+
+const destinations = POINTS.map((it) => ({
+  'name': it,
+  'description': `${it}'s description: Iceland is an island, a European country, located midway between North America and mainland Europe. It lies just below the Arctic Circle between 64 and 66 degrees north. The capital is Reykjavik. It is the northernmost capital in the world and is located exactly halfway between New York and Moscow.`,
+  'pictures': generateRandomArray([0, 10], () => ({
+    'src': `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
+    'description': `${it}'s photo`
+  })),
+}));
 
 const setOfferListGenerator = (offerType) => {
   let id = 0;
@@ -18,16 +27,6 @@ const setOfferListGenerator = (offerType) => {
 
 };
 
-const generateDestination = () => {
-  const {description, name, pictures} = getRandomArrayElement(points);
-
-  return ({
-    'description': description,
-    'name': name,
-    'pictures': pictures
-  });
-};
-
 const generateOffer = (offerType) => {
   const genarateOffers = setOfferListGenerator(offerType);
 
@@ -37,22 +36,14 @@ const generateOffer = (offerType) => {
   });
 };
 
-const getTypeOffer = (offerTypes) => {
-  const typeOffer = {};
+const offers = TYPES.map((it) => generateOffer(it));
 
-  offerTypes.forEach((it) => {
-    typeOffer[it.toUpperCase()] = generateOffer(it);
-  });
-
-  return typeOffer;
-};
-
-// Cловарь ключами TYPE: {"type": type, offers: [{id, title, price}]}
-const TypeOffer = getTypeOffer(types);
+const findTypeOffers = (offerType) => offers.find(({type}) => type === offerType).offers;
 
 const getActiveOffers = (offerType) => {
-  const typeKey = offerType.toUpperCase();
-  const offerListLength = TypeOffer[typeKey].offers.length;
+  const typeOffers = findTypeOffers(offerType);
+  const offerListLength = typeOffers.length;
+
   const getOfferId = createRandomUniqueIntegerGenerator(1, offerListLength);
 
   const activeOffersIds = generateRandomArray([0, offerListLength], getOfferId);
@@ -80,8 +71,8 @@ const createNewDateChain = (startDate = dayjs()) => {
 const generateDate = createNewDateChain();
 
 const generatePoint = (id) => {
-  const destination = generateDestination();
-  const type = getRandomArrayElement(types);
+  const destination = getRandomArrayElement(destinations);
+  const type = getRandomArrayElement(TYPES);
   const dateFrom = generateDate.from();
   const duration = getRandomInteger(30, 60*4);
   const dateTo = generateDate.to(duration);
@@ -99,4 +90,4 @@ const generatePoint = (id) => {
   });
 };
 
-export {generatePoint, TypeOffer};
+export {generatePoint, destinations, offers, findTypeOffers};
