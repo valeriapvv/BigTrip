@@ -1,9 +1,9 @@
 import {
-	getRandomInteger,
-	getRandomArrayElement,
-	generateRandomArray,
-	createRandomUniqueIntegerGenerator,
-	createNewDateChain,
+  getRandomInteger,
+  getRandomArrayElement,
+  generateRandomArray,
+  createRandomUniqueIntegerGenerator,
+  createNewDateChain,
 } from '../utils.js';
 import {TYPES, POINTS} from './constants.js';
 

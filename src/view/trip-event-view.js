@@ -1,6 +1,6 @@
 import View from './view.js';
 import {findTypeOffers} from '../data/trip-data-generation.js';
-import {formatDate, getDateDifference} from '../utils.js'
+import {formatDate, getDateDifference} from '../utils.js';
 
 const createTripEventTemplate = (tripEvent, allOffers) => {
   const {
@@ -62,7 +62,7 @@ const createTripEventTemplate = (tripEvent, allOffers) => {
 
 export default class TripEventView extends View {
   constructor(tripEvent, destinations, allOffers) {
-    super(tripEvent, destinations, allOffers);
+    super();
     this.tripEvent = tripEvent;
     this.destinations = destinations;
     this.offers = allOffers;

@@ -106,8 +106,8 @@ const createTripEventChangingTemplate = (tripEvent, allOffers) => {
       (`
             		<div class="event__photos-container">
           				<div class="event__photos-tape">
-          					${pictures.map(({src, description}) => (`
-          						<img class="event__photo" src="${src}" alt="${description}">
+          					${pictures.map((it) => (`
+          						<img class="event__photo" src="${it.src}" alt="${it.description}">
                       `)).join('')}
             				
           				</div>
@@ -122,7 +122,7 @@ const createTripEventChangingTemplate = (tripEvent, allOffers) => {
 
 export default class TripEventChangingView extends View {
   constructor(tripEvent, destinations, allOffers) {
-    super(tripEvent, allOffers);
+    super();
     this.tripEvent = tripEvent;
     this.destinations = destinations;
     this.offers = allOffers;

@@ -9,7 +9,7 @@ export default class TripEventsBodyPresenter {
     this.tripEventListComponent = new TripEventListView();
     this.tripEventsModel = tripEventsModel;
     this.tripEvents = this.tripEventsModel.getTripEvents();
-    
+
     this.destinations = this.tripEventsModel.getDestinations(); /////
     this.offers = this.tripEventsModel.getOffers(); /////
 
