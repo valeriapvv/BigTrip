@@ -2,8 +2,8 @@ import TripEventChangingView from '../view/trip-event-changing-view.js';
 import {render, RenderPosition} from '../render.js';
 
 export default class TripEventChangingPresenter {
-  init = (tripEventItem, tripEventData, removeItemEventListeners) => {
-    this.tripEventChangingView = new TripEventChangingView(tripEventData);
+  init = (tripEventItem, tripEventData, destinations, offers, removeItemEventListeners) => {
+    this.tripEventChangingView = new TripEventChangingView(tripEventData, destinations, offers);
     render(this.tripEventChangingView, tripEventItem.getElement(), RenderPosition.AFTEREND);
 
     this.tripEventChangingForm = this.tripEventChangingView.getElement();

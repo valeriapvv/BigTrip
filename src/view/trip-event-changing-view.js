@@ -4,7 +4,7 @@ import {TYPES} from '../data/data.js';
 
 const dayjs = require('dayjs');
 
-const createTripEventChangingTemplate = (tripEvent) => {
+const createTripEventChangingTemplate = (tripEvent, allOffers) => {
   const {
     base_price: basePrice,
     destination,
@@ -17,7 +17,7 @@ const createTripEventChangingTemplate = (tripEvent) => {
 
   const startTime = dayjs(dateFrom).format('DD/MM/YY HH:mm');
   const endTime = dayjs(dateTo).format('DD/MM/YY HH:mm');
-  const typeOffers = findTypeOffers(type);
+  const typeOffers = findTypeOffers(type, allOffers);
 
   const isExistPictureList = !!(pictures && pictures.length);
 
@@ -122,12 +122,14 @@ const createTripEventChangingTemplate = (tripEvent) => {
 
 
 export default class TripEventChangingView extends View {
-  constructor(tripEvent) {
-    super(tripEvent);
+  constructor(tripEvent, destinations, allOffers) {
+    super(tripEvent, allOffers);
     this.tripEvent = tripEvent;
+    this.destinations = destinations;
+    this.offers = allOffers;
   }
 
   getTemplate() {
-    return createTripEventChangingTemplate(this.tripEvent);
+    return createTripEventChangingTemplate(this.tripEvent, this.offers);
   }
 }

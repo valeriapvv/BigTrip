@@ -1,9 +1,9 @@
 import View from './view.js';
-import {offers as allOffers, findTypeOffers} from '../data/trip-point-generation.js';
+import {findTypeOffers} from '../data/trip-point-generation.js';
 
 const dayjs = require('dayjs');
 
-const createTripEventTemplate = (tripEvent) => {
+const createTripEventTemplate = (tripEvent, allOffers) => {
   const {
     base_price: basePrice,
     destination,
@@ -20,7 +20,7 @@ const createTripEventTemplate = (tripEvent) => {
   const minutes = duration % 60;
   const humanizedDuration = `${hours >= 1 ? `${hours  }H` : ''} ${minutes < 10 ? '0' : ''}${minutes}M`;
 
-  const offerList = findTypeOffers(type).filter(({id}) => offers.includes(id));
+  const offerList = findTypeOffers(type, allOffers).filter(({id}) => offers.includes(id));
 
   return (`<li class="trip-events__item">
          <div class="event">
@@ -65,12 +65,14 @@ const createTripEventTemplate = (tripEvent) => {
 };
 
 export default class TripEventView extends View {
-  constructor(tripEvent) {
-    super(tripEvent);
+  constructor(tripEvent, destinations, allOffers) {
+    super(tripEvent, destinations, allOffers);
     this.tripEvent = tripEvent;
+    this.destinations = destinations;
+    this.offers = allOffers;
   }
 
   getTemplate() {
-    return createTripEventTemplate(this.tripEvent);
+    return createTripEventTemplate(this.tripEvent, this.offers);
   }
 }

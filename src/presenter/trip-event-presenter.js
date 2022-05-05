@@ -2,11 +2,11 @@ import TripEventView from '../view/trip-event-view.js';
 import {render} from '../render.js';
 
 export default class TripEventPresenter {
-  init = (tripEventData, tripEventContainer, tripEventChangingForm) => {
-    this.tripEventComponent = new TripEventView(tripEventData);
+  init = (tripEventData, destinations, offers, tripEventContainer, tripEventChangingForm) => { //////
+    this.tripEventComponent = new TripEventView(tripEventData, destinations, offers); //////
     this.tripEventItem = this.tripEventComponent.getElement();
 
-    this.setRollupButtonClick(tripEventChangingForm, tripEventData);
+    this.setRollupButtonClick(tripEventChangingForm, tripEventData, destinations, offers);
 
     // класс добавляется/удаляется, а цвет звездочек
     // непонятно как меняется:
@@ -15,9 +15,9 @@ export default class TripEventPresenter {
     render(this.tripEventComponent, tripEventContainer);
   };
 
-  setRollupButtonClickHandler = (tripEventChangingForm, tripEventData) => {
+  setRollupButtonClickHandler = (tripEventChangingForm, tripEventData, destinations, offers) => { //////
     this.onRollupButtonClick = () => {
-      tripEventChangingForm.init(this.tripEventComponent, tripEventData, this.removeEventListeners);
+      tripEventChangingForm.init(this.tripEventComponent, tripEventData, destinations, offers, this.removeEventListeners); /////
 
       this.tripEventItem.remove();
     };
@@ -25,10 +25,10 @@ export default class TripEventPresenter {
     return this.onRollupButtonClick;
   };
 
-  setRollupButtonClick = (tripEventChangingForm, tripEventData) => {
+  setRollupButtonClick = (tripEventChangingForm, tripEventData, destinations, offers) => { ///////
     this.rollupButton = this.tripEventItem.querySelector('.event__rollup-btn');
 
-    this.rollupButton.addEventListener('click', this.setRollupButtonClickHandler(tripEventChangingForm, tripEventData));
+    this.rollupButton.addEventListener('click', this.setRollupButtonClickHandler(tripEventChangingForm, tripEventData, destinations, offers));
   };
 
   onFavoriteButtonClick = () => {

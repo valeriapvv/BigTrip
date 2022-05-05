@@ -38,10 +38,10 @@ const generateOffer = (offerType) => {
 
 const offers = TYPES.map((it) => generateOffer(it));
 
-const findTypeOffers = (offerType) => offers.find(({type}) => type === offerType).offers;
+const findTypeOffers = (offerType, allOffers) => allOffers.find(({type}) => type === offerType).offers;
 
 const getActiveOffers = (offerType) => {
-  const typeOffers = findTypeOffers(offerType);
+  const typeOffers = findTypeOffers(offerType, offers);
   const offerListLength = typeOffers.length;
 
   const getOfferId = createRandomUniqueIntegerGenerator(1, offerListLength);
