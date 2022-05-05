@@ -71,4 +71,20 @@ export default class TripEventView extends View {
   getTemplate() {
     return createTripEventTemplate(this.tripEvent, this.offers);
   }
+
+  setRollupButtonClickHandler = (callback) => {
+    this._callback = callback;
+    this.rollupButton = this.getElement().querySelector('.event__rollup-btn');
+
+    this.rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
+  };
+
+  #rollupButtonClickHandler = () => {
+    this._callback();
+  };
+
+  removeEventListeners = () => {
+    this.rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
+    // this.favoriteButton.removeEventListener('click', this.onFavoriteButtonClick);
+  };
 }
