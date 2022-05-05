@@ -70,7 +70,7 @@ const getDateDifference = (date1, date2) => {
   const difference = Math.abs(date1.diff(date2, 'minute'));
 
   const days = Math.floor(difference / 60 / 24);
-  const hours = Math.floor(difference / 60);
+  const hours = Math.floor(difference % (60*24) / 60);
   const minutes = difference % 60;
 
   return `${days >= 1 ? `${days}D`: ''} ${hours >= 1 ? `${hours  }H` : ''} ${minutes < 10 ? '0' : ''}${minutes}M`;

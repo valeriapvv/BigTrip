@@ -1,5 +1,5 @@
 import View from './view.js';
-import {findTypeOffers} from '../data/trip-point-generation.js';
+import {findTypeOffers} from '../data/trip-data-generation.js';
 import {formatDate, getDateDifference} from '../utils.js'
 
 const createTripEventTemplate = (tripEvent, allOffers) => {

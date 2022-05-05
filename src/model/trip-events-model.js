@@ -1,4 +1,4 @@
-import {generatePoint, destinations, offers} from '../data/trip-point-generation.js';
+import {generatePoint, destinations, offers} from '../data/trip-data-generation.js';
 
 export default class TripEventsModel {
   tripEvents = (() => {

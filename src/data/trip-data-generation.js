@@ -5,7 +5,7 @@ import {
 	createRandomUniqueIntegerGenerator,
 	createNewDateChain,
 } from '../utils.js';
-import {TYPES, POINTS} from './data.js';
+import {TYPES, POINTS} from './constants.js';
 
 const destinations = POINTS.map((it) => ({
   'name': it,

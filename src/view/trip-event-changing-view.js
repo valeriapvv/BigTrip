@@ -1,6 +1,6 @@
 import View from './view.js';
-import {findTypeOffers} from '../data/trip-point-generation.js';
-import {TYPES} from '../data/data.js';
+import {findTypeOffers} from '../data/trip-data-generation.js';
+import {TYPES} from '../data/constants.js';
 import {formatDate} from '../utils.js';
 
 const createTripEventChangingTemplate = (tripEvent, allOffers) => {
