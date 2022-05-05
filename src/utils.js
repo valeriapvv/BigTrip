@@ -47,11 +47,12 @@ const createRandomUniqueIntegerGenerator = (min, max) => {
 
 // Работа с датами
 const createNewDateChain = (startDate = dayjs()) => {
+  // каждая следующая дата после предыдущейы
   let date = startDate;
 
   return ({
-    from() {
-      date = dayjs(date).add(getRandomInteger(60, 60*24), 'minute');
+    from(timeBetweenEvents) {
+      date = dayjs(date).add(timeBetweenEvents, 'minute');
 
       return date;
     },

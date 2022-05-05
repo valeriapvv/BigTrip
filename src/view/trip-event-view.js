@@ -4,12 +4,12 @@ import {formatDate, getDateDifference} from '../utils.js'
 
 const createTripEventTemplate = (tripEvent, allOffers) => {
   const {
-    base_price: basePrice,
+    basePrice,
     destination,
-    date_from: dateFrom,
-    date_to: dateTo,
+    dateFrom,
+    dateTo,
     offers, // массив с id
-    is_favorite: isFavorite,
+    isFavorite,
     type
   } = tripEvent;
   const {name} = destination;

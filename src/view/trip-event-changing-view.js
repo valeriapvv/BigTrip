@@ -5,10 +5,10 @@ import {formatDate} from '../utils.js';
 
 const createTripEventChangingTemplate = (tripEvent, allOffers) => {
   const {
-    base_price: basePrice,
+    basePrice,
     destination,
-    date_from: dateFrom,
-    date_to: dateTo,
+    dateFrom,
+    dateTo,
     offers, // массив с id
     type
   } = tripEvent;
