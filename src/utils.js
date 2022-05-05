@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const getRandomNumber = (minNumber, maxNumber, digits = 0) => {
   // if (minNumber < 0 || maxNumber < 0) {
   //   throw new RangeError('Диапазон может быть только положительным');
@@ -43,10 +45,43 @@ const createRandomUniqueIntegerGenerator = (min, max) => {
   };
 };
 
+// Работа с датами
+const createNewDateChain = (startDate = dayjs()) => {
+  let date = startDate;
+
+  return ({
+    from() {
+      date = dayjs(date).add(getRandomInteger(60, 60*24), 'minute');
+
+      return date;
+    },
+    to(eventDuration) {
+      date = dayjs(date).add(eventDuration, 'minute');
+
+      return date;
+    }
+  });
+};
+
+const formatDate = (date, dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ') => dayjs(date).format(dateFormat);
+
+const getDateDifference = (date1, date2) => {
+  const difference = Math.abs(date1.diff(date2, 'minute'));
+
+  const days = Math.floor(difference / 60 / 24);
+  const hours = Math.floor(difference / 60);
+  const minutes = difference % 60;
+
+  return `${days >= 1 ? `${days}D`: ''} ${hours >= 1 ? `${hours  }H` : ''} ${minutes < 10 ? '0' : ''}${minutes}M`;
+};
+
 export {
   getRandomArrayElement,
   getRandomInteger,
   generateRandomArray,
   createRandomUniqueIntegerGenerator,
+  createNewDateChain,
+  formatDate,
+  getDateDifference,
 };
 

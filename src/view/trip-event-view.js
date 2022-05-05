@@ -1,7 +1,6 @@
 import View from './view.js';
 import {findTypeOffers} from '../data/trip-point-generation.js';
-
-const dayjs = require('dayjs');
+import {formatDate, getDateDifference} from '../utils.js'
 
 const createTripEventTemplate = (tripEvent, allOffers) => {
   const {
@@ -9,33 +8,30 @@ const createTripEventTemplate = (tripEvent, allOffers) => {
     destination,
     date_from: dateFrom,
     date_to: dateTo,
-    duration, // в минутах
     offers, // массив с id
     is_favorite: isFavorite,
     type
   } = tripEvent;
   const {name} = destination;
 
-  const hours = Math.floor(duration / 60);
-  const minutes = duration % 60;
-  const humanizedDuration = `${hours >= 1 ? `${hours  }H` : ''} ${minutes < 10 ? '0' : ''}${minutes}M`;
+  const humanizedDuration = getDateDifference(dateFrom, dateTo);
 
   const offerList = findTypeOffers(type, allOffers).filter(({id}) => offers.includes(id));
 
   return (`<li class="trip-events__item">
          <div class="event">
-           <time class="event__date" datetime="${dayjs(dateFrom).format('YYYY-MM-DD')}">${dayjs(dateFrom).format('MMM D')}</time>
+           <time class="event__date" datetime="${formatDate(dateFrom, 'YYYY-MM-DD')}">${formatDate(dateFrom,'MMM D')}</time>
            <div class="event__type">
              <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
            </div>
            <h3 class="event__title">${type} ${name}</h3>
            <div class="event__schedule">
              <p class="event__time">
-               <time class="event__start-time" datetime="${dayjs(dateFrom).format('YYYY-MM-DDTHH:mm')}">
-               ${dayjs(dateFrom).format('HH:mm')}</time>
+               <time class="event__start-time" datetime="${formatDate(dateFrom, 'YYYY-MM-DDTHH:mm')}">
+               ${formatDate(dateFrom, 'HH:mm')}</time>
                &mdash;
-               <time class="event__end-time" datetime="${dayjs(dateTo).format('YYYY-MM-DDTHH:mm')}">
-               ${dayjs(dateTo).format('HH:mm')}</time>
+               <time class="event__end-time" datetime="${formatDate(dateTo, 'YYYY-MM-DDTHH:mm')}">
+               ${formatDate(dateTo, 'HH:mm')}</time>
              </p>
              <p class="event__duration">${humanizedDuration}</p>
            </div>

@@ -1,8 +1,7 @@
 import View from './view.js';
 import {findTypeOffers} from '../data/trip-point-generation.js';
 import {TYPES} from '../data/data.js';
-
-const dayjs = require('dayjs');
+import {formatDate} from '../utils.js';
 
 const createTripEventChangingTemplate = (tripEvent, allOffers) => {
   const {
@@ -15,8 +14,8 @@ const createTripEventChangingTemplate = (tripEvent, allOffers) => {
   } = tripEvent;
   const {name, description, pictures} = destination;
 
-  const startTime = dayjs(dateFrom).format('DD/MM/YY HH:mm');
-  const endTime = dayjs(dateTo).format('DD/MM/YY HH:mm');
+  const startTime = formatDate(dateFrom,'DD/MM/YY HH:mm');
+  const endTime = formatDate(dateTo,'DD/MM/YY HH:mm');
   const typeOffers = findTypeOffers(type, allOffers);
 
   const isExistPictureList = !!(pictures && pictures.length);

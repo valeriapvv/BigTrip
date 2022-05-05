@@ -1,7 +1,11 @@
-import {getRandomInteger, getRandomArrayElement, generateRandomArray, createRandomUniqueIntegerGenerator} from '../utils.js';
+import {
+	getRandomInteger,
+	getRandomArrayElement,
+	generateRandomArray,
+	createRandomUniqueIntegerGenerator,
+	createNewDateChain,
+} from '../utils.js';
 import {TYPES, POINTS} from './data.js';
-
-const dayjs = require('dayjs');
 
 const destinations = POINTS.map((it) => ({
   'name': it,
@@ -49,23 +53,6 @@ const getActiveOffers = (offerType) => {
   const activeOffersIds = generateRandomArray([0, offerListLength], getOfferId);
 
   return activeOffersIds.sort((a,b) => a - b);
-};
-
-const createNewDateChain = (startDate = dayjs()) => {
-  let date = startDate;
-
-  return ({
-    from() {
-      date = dayjs(date).add(getRandomInteger(60, 60*24), 'minute');
-
-      return date;
-    },
-    to(eventDuration) {
-      date = dayjs(date).add(eventDuration, 'minute');
-
-      return date;
-    }
-  });
 };
 
 const generateDate = createNewDateChain();
