@@ -61,39 +61,45 @@ const createTripEventTemplate = (tripEvent, allOffers) => {
 };
 
 export default class TripEventView extends View {
+  #tripEvent = null;
+  #destinations = null;
+  #offers = null;
+  #rollupButton = null;
+  #favoriteButton = null;
+
   constructor(tripEvent, destinations, allOffers) {
     super();
-    this.tripEvent = tripEvent;
-    this.destinations = destinations;
-    this.offers = allOffers;
+    this.#tripEvent = tripEvent;
+    this.#destinations = destinations;
+    this.#offers = allOffers;
   }
 
-  getTemplate() {
-    return createTripEventTemplate(this.tripEvent, this.offers);
+  get template() {
+    return createTripEventTemplate(this.#tripEvent, this.#offers);
   }
 
   setRollupButtonClickHandler = (callback) => {
     this._callback = callback;
-    this.rollupButton = this.getElement().querySelector('.event__rollup-btn');
+    this.#rollupButton = this.element.querySelector('.event__rollup-btn');
 
-    this.rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
+    this.#rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
+  };
+
+  setFavoriteButtonClickHandler = () => {
+    this.#favoriteButton = this.element.querySelector('.event__favorite-btn');
+    this.#favoriteButton.addEventListener('click', this.#onFavoriteButtonClick);
+  };
+
+  removeEventListeners = () => {
+    this.#rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
+    this.#favoriteButton.removeEventListener('click', this.#onFavoriteButtonClick);
   };
 
   #rollupButtonClickHandler = () => {
     this._callback();
   };
 
-  setFavoriteButtonClickHandler = () => {
-    this.favoriteButton = this.getElement().querySelector('.event__favorite-btn');
-    this.favoriteButton.addEventListener('click', this.#onFavoriteButtonClick);
-  };
-
   #onFavoriteButtonClick = () => {
-    this.favoriteButton.classList.toggle('event__favorite-btn--active');
-  };
-
-  removeEventListeners = () => {
-    this.rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
-    this.favoriteButton.removeEventListener('click', this.#onFavoriteButtonClick);
+    this.#favoriteButton.classList.toggle('event__favorite-btn--active');
   };
 }

@@ -5,8 +5,13 @@ import TripEventChangingView from '../view/trip-event-changing-view.js';
 import {render} from '../render.js';
 
 export default class TripEventsBodyPresenter {
-  #tripEventsBodyContainer;
-  #tripEventsModel;
+  #tripEventsBodyContainer = null;
+  #tripEventsModel = null;
+  #tripEventListComponent = null;
+  #tripEvents = null;
+  #destinations = null;
+  #offers = null;
+  #tripEventListContainer = null;
 
   constructor(tripEventsBodyContainer, tripEventsModel) {
     this.#tripEventsBodyContainer = tripEventsBodyContainer;
@@ -14,32 +19,32 @@ export default class TripEventsBodyPresenter {
   }
 
   init = () => {
-    this.tripEventListComponent = new TripEventListView();
-    this.tripEvents = this.#tripEventsModel.getTripEvents();
+    this.#tripEventListComponent = new TripEventListView();
+    this.#tripEvents = this.#tripEventsModel.tripEvents;
 
-    this.destinations = this.#tripEventsModel.getDestinations();
-    this.offers = this.#tripEventsModel.getOffers();
+    this.#destinations = this.#tripEventsModel.destinations;
+    this.#offers = this.#tripEventsModel.offers;
 
     render(new TripSortView(), this.#tripEventsBodyContainer);
-    render(this.tripEventListComponent, this.#tripEventsBodyContainer);
+    render(this.#tripEventListComponent, this.#tripEventsBodyContainer);
 
-    this.tripEventListContainer = this.tripEventListComponent.getElement();
+    this.#tripEventListContainer = this.#tripEventListComponent.element;
 
-    for (const tripEventData of this.tripEvents) {
+    for (const tripEventData of this.#tripEvents) {
       this.#renderTripEvent(tripEventData);
     }
   };
 
   #renderTripEvent = (tripEventData) => {
-    const tripEventComponent = new TripEventView(tripEventData, this.destinations, this.offers);
-    const tripEventElement = tripEventComponent.getElement();
+    const tripEventComponent = new TripEventView(tripEventData, this.#destinations, this.#offers);
+    const tripEventElement = tripEventComponent.element;
 
     tripEventComponent.setRollupButtonClickHandler(() => {
-      const tripEventChangingComponent = new TripEventChangingView(tripEventData, this.destinations, this.offers);
-      const tripEventChangingForm = tripEventChangingComponent.getElement();
+      const tripEventChangingComponent = new TripEventChangingView(tripEventData, this.#destinations, this.#offers);
+      const tripEventChangingForm = tripEventChangingComponent.element;
 
       const onRollupForm = () => {
-        this.tripEventListContainer.replaceChild(tripEventElement, tripEventChangingForm);
+        this.#tripEventListContainer.replaceChild(tripEventElement, tripEventChangingForm);
       };
 
       // обраборчики для формы редактирования
@@ -52,11 +57,11 @@ export default class TripEventsBodyPresenter {
         tripEventComponent.removeElement();
       });
 
-      this.tripEventListContainer.replaceChild(tripEventChangingForm, tripEventElement);
+      this.#tripEventListContainer.replaceChild(tripEventChangingForm, tripEventElement);
     });
 
     tripEventComponent.setFavoriteButtonClickHandler();
 
-    render(tripEventComponent, this.tripEventListContainer);
+    render(tripEventComponent, this.#tripEventListContainer);
   };
 }

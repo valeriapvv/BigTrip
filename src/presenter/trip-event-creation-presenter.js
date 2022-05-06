@@ -15,7 +15,7 @@ export default class TripEventEditPresenter {
 
   init = (tripEventEditContainer, onReset) => {
     this.tripEventEditComponent = new TripEventEditView();
-    this.tripEventForm = this.tripEventEditComponent.getElement();
+    this.tripEventForm = this.tripEventEditComponent.element;
 
     this.tripEventForm.addEventListener('reset', this.setFormResetHadler(onReset));
 

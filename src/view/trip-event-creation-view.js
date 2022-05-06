@@ -166,7 +166,7 @@ const createTripEventEditTemplate = () => (
 );
 
 export default class TripEventEditView extends View {
-  getTemplate() {
+  get template() {
     return createTripEventEditTemplate();
   }
 }

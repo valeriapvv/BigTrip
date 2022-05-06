@@ -5,7 +5,7 @@ const createTripInfoDatesTemplate = (startDate = 'Mar 18', terminalDate = 'Mar 2
 );
 
 export default class TripInfoDatesView extends View {
-  getTemplate() {
+  get template() {
     return createTripInfoDatesTemplate();
   }
 }

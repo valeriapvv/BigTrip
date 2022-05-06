@@ -121,22 +121,29 @@ const createTripEventChangingTemplate = (tripEvent, allOffers) => {
 
 
 export default class TripEventChangingView extends View {
+  #tripEvent = null;
+  #destinations = null;
+  #offers = null;
+  #rollupButton = null;
+  #form = null;
+  #deleteButton = null;
+
   constructor(tripEvent, destinations, allOffers) {
     super();
-    this.tripEvent = tripEvent;
-    this.destinations = destinations;
-    this.offers = allOffers;
+    this.#tripEvent = tripEvent;
+    this.#destinations = destinations;
+    this.#offers = allOffers;
   }
 
-  getTemplate() {
-    return createTripEventChangingTemplate(this.tripEvent, this.offers);
+  get template() {
+    return createTripEventChangingTemplate(this.#tripEvent, this.#offers);
   }
 
   setRollupButtonClickHandler = (onRollup) => {
     this._onRollup = onRollup;
-    this.rollupButton = this.getElement().querySelector('.event__rollup-btn');
+    this.#rollupButton = this.element.querySelector('.event__rollup-btn');
 
-    this.rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
+    this.#rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
   };
 
   setEscapeKeydownHandler = (onKeydown) => {
@@ -146,29 +153,27 @@ export default class TripEventChangingView extends View {
 
   setSubmitHandler = (onSubmit) => {
     this._onSubmit = onSubmit;
-    this.form = this.getElement().querySelector('form');
+    this.#form = this.element.querySelector('form');
 
-    this.form.addEventListener('submit', this.#submitHandler);
-  };
-
-  #submitHandler = (evt) => {
-    evt.preventDefault();
-
-    this._onSubmit();
-    this.removeEventListeners();
+    this.#form.addEventListener('submit', this.#submitHandler);
   };
 
   setDeleteButtonClickHandler = (onDelete) => {
     this._onDelete = onDelete;
-    this.deleteButton = this.getElement().querySelector('.event__reset-btn');
-    this.deleteButton.addEventListener('click', this.#deleteButtonClickHandler);
+    this.#deleteButton = this.element.querySelector('.event__reset-btn');
+    this.#deleteButton.addEventListener('click', this.#deleteButtonClickHandler);
   };
 
-  #deleteButtonClickHandler = () => {
-    this._onDelete();
+  removeEventListeners = () => {
+    this.#rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
+    this.#deleteButton.removeEventListener('click', this.#deleteButtonClickHandler);
+    document.removeEventListener('keydown', this.#onEscapeKeydown);
+    this.#form.removeEventListener('submit', this.#submitHandler);
+  };
+
+  #rollupButtonClickHandler = () => {
+    this._onRollup();
     this.removeEventListeners();
-    this.getElement().remove();
-    this.removeElement();
   };
 
   #onEscapeKeydown = (evt) => {
@@ -178,15 +183,17 @@ export default class TripEventChangingView extends View {
     }
   };
 
-  #rollupButtonClickHandler = () => {
-    this._onRollup();
+  #submitHandler = (evt) => {
+    evt.preventDefault();
+
+    this._onSubmit();
     this.removeEventListeners();
   };
 
-  removeEventListeners = () => {
-    this.rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
-    this.deleteButton.removeEventListener('click', this.#deleteButtonClickHandler);
-    document.removeEventListener('keydown', this.#onEscapeKeydown);
-    this.form.removeEventListener('submit', this.#submitHandler);
+  #deleteButtonClickHandler = () => {
+    this._onDelete();
+    this.removeEventListeners();
+    this.element.remove();
+    this.removeElement();
   };
 }

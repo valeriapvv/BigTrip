@@ -30,7 +30,7 @@ const createTripSortTemplate = () => (
 );
 
 export default class TripSortView extends View {
-  getTemplate() {
+  get template() {
     return createTripSortTemplate();
   }
 }

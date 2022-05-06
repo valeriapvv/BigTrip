@@ -7,7 +7,7 @@ const createTripInfoTitleTemplate = (points = ['Amsterdam', 'Chamonix', 'Geneva'
 };
 
 export default class TripInfoTitleView extends View {
-  getTemplate() {
+  get template() {
     return createTripInfoTitleTemplate();
   }
 }

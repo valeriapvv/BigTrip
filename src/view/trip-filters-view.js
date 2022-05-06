@@ -21,7 +21,7 @@ const createTripFiltersTemplate = () => (
 );
 
 export default class TripFiltersView extends View {
-  getTemplate() {
+  get template() {
     return createTripFiltersTemplate();
   }
 }

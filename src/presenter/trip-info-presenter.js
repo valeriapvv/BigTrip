@@ -7,7 +7,7 @@ import {render, RenderPosition} from '../render.js';
 export default class TripInfoPresenter {
   init = (tripInfoContainerSite) => {
     this.tripInfoComponent = new TripInfoSectionView();
-    this.tripInfoContainer = this.tripInfoComponent.getElement();
+    this.tripInfoContainer = this.tripInfoComponent.element;
     this.mainTripInfoContainer = this.tripInfoContainer.querySelector('.trip-info__main');
 
     render(new TripInfoTitleView(), this.mainTripInfoContainer, RenderPosition.AFTERBEGIN);

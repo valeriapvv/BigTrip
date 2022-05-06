@@ -5,7 +5,7 @@ const createTripInfoCostTemplate = (cost = 1230) => `<p class="trip-info__cost">
    </p>`;
 
 export default class TripInfoCostView extends View {
-  getTemplate() {
+  get template() {
     return createTripInfoCostTemplate();
   }
 }

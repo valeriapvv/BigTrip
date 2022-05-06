@@ -7,7 +7,7 @@ const createTripInfoSectionTemplate = () => (
 );
 
 export default class TripInfoSectionView extends View {
-  getTemplate() {
+  get template() {
     return createTripInfoSectionTemplate();
   }
 }
