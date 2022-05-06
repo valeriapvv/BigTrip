@@ -2,6 +2,7 @@ import TripSortView from '../view/trip-sort-view.js';
 import TripEventListView from '../view/trip-event-list-view.js';
 import TripEventView from '../view/trip-event-view.js';
 import TripEventChangingView from '../view/trip-event-changing-view.js';
+import EmptyTripListMessageView from '../view/empty-trip-list-message-view.js';
 import {render} from '../render.js';
 
 export default class TripEventsBodyPresenter {
@@ -12,6 +13,9 @@ export default class TripEventsBodyPresenter {
   #destinations = null;
   #offers = null;
   #tripEventListContainer = null;
+  #emptyTripListMessageComponent = null;
+  #tripSortComponent = null;
+  #tripSortElement = null;
 
   constructor(tripEventsBodyContainer, tripEventsModel) {
     this.#tripEventsBodyContainer = tripEventsBodyContainer;
@@ -25,7 +29,9 @@ export default class TripEventsBodyPresenter {
     this.#destinations = this.#tripEventsModel.destinations;
     this.#offers = this.#tripEventsModel.offers;
 
-    render(new TripSortView(), this.#tripEventsBodyContainer);
+    this.#tripSortComponent = new TripSortView();
+
+    render(this.#tripSortComponent, this.#tripEventsBodyContainer);
     render(this.#tripEventListComponent, this.#tripEventsBodyContainer);
 
     this.#tripEventListContainer = this.#tripEventListComponent.element;
@@ -55,6 +61,18 @@ export default class TripEventsBodyPresenter {
       tripEventChangingComponent.setDeleteButtonClickHandler(() => {
         tripEventComponent.removeEventListeners();
         tripEventComponent.removeElement();
+
+        const tripEventListLength = this.#tripEventListContainer.children.length;
+
+        if (!tripEventListLength) {
+          this.#emptyTripListMessageComponent = new EmptyTripListMessageView();
+          const emptyTripListMessage = this.#emptyTripListMessageComponent.element;
+
+          this.#tripEventsBodyContainer.replaceChild(emptyTripListMessage, this.#tripEventListContainer);
+
+          this.#tripSortElement = this.#tripSortComponent.element;
+          this.#tripSortElement.remove();
+        }
       });
 
       this.#tripEventListContainer.replaceChild(tripEventChangingForm, tripEventElement);
@@ -64,4 +82,5 @@ export default class TripEventsBodyPresenter {
 
     render(tripEventComponent, this.#tripEventListContainer);
   };
+
 }

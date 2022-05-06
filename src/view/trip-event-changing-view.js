@@ -191,9 +191,10 @@ export default class TripEventChangingView extends View {
   };
 
   #deleteButtonClickHandler = () => {
-    this._onDelete();
     this.removeEventListeners();
     this.element.remove();
     this.removeElement();
+
+    this._onDelete();
   };
 }
