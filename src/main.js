@@ -10,16 +10,12 @@ const tripEventsBodySite = document.querySelector('.trip-events');
 
 const tripFiltersPresenter = new TripFiltersPresenter();
 const tripInfoPresenter = new TripInfoPresenter();
-const tripEventsBodyPresenter = new TripEventsBodyPresenter();
+const tripEventsBodyPresenter = new TripEventsBodyPresenter(tripEventsBodySite, new TripEventsModel());
 const addEventButtonPresenter = new AddEventButtonPresenter();
 
 tripFiltersPresenter.init(tripFiltersSite);
 tripInfoPresenter.init(tripMainSite);
 
-tripEventsBodyPresenter.init(tripEventsBodySite, new TripEventsModel());
+tripEventsBodyPresenter.init();
 
 addEventButtonPresenter.init(document.querySelector('.trip-events__list'));
-
-// const dayjs = require('dayjs');
-// console.log(dayjs())
-

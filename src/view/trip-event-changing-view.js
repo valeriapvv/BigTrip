@@ -131,4 +131,62 @@ export default class TripEventChangingView extends View {
   getTemplate() {
     return createTripEventChangingTemplate(this.tripEvent, this.offers);
   }
+
+  setRollupButtonClickHandler = (onRollup) => {
+    this._onRollup = onRollup;
+    this.rollupButton = this.getElement().querySelector('.event__rollup-btn');
+
+    this.rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
+  };
+
+  setEscapeKeydownHandler = (onKeydown) => {
+    this._onKeydown = onKeydown;
+    document.addEventListener('keydown', this.#onEscapeKeydown);
+  };
+
+  setSubmitHandler = (onSubmit) => {
+    this._onSubmit = onSubmit;
+    this.form = this.getElement().querySelector('form');
+
+    this.form.addEventListener('submit', this.#submitHandler);
+  };
+
+  #submitHandler = (evt) => {
+    evt.preventDefault();
+
+    this._onSubmit();
+    this.removeEventListeners();
+  };
+
+  setDeleteButtonClickHandler = (onDelete) => {
+    this._onDelete = onDelete;
+    this.deleteButton = this.getElement().querySelector('.event__reset-btn');
+    this.deleteButton.addEventListener('click', this.#deleteButtonClickHandler);
+  };
+
+  #deleteButtonClickHandler = () => {
+    this._onDelete();
+    this.removeEventListeners();
+    this.getElement().remove();
+    this.removeElement();
+  };
+
+  #onEscapeKeydown = (evt) => {
+    if (evt.code === 'Escape') {
+      this._onKeydown();
+      this.removeEventListeners();
+    }
+  };
+
+  #rollupButtonClickHandler = () => {
+    this._onRollup();
+    this.removeEventListeners();
+  };
+
+  removeEventListeners = () => {
+    this.rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
+    this.deleteButton.removeEventListener('click', this.#deleteButtonClickHandler);
+    document.removeEventListener('keydown', this.#onEscapeKeydown);
+    this.form.removeEventListener('submit', this.#submitHandler);
+  };
 }

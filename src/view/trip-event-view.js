@@ -83,8 +83,17 @@ export default class TripEventView extends View {
     this._callback();
   };
 
+  setFavoriteButtonClickHandler = () => {
+    this.favoriteButton = this.getElement().querySelector('.event__favorite-btn');
+    this.favoriteButton.addEventListener('click', this.#onFavoriteButtonClick);
+  };
+
+  #onFavoriteButtonClick = () => {
+    this.favoriteButton.classList.toggle('event__favorite-btn--active');
+  };
+
   removeEventListeners = () => {
     this.rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
-    // this.favoriteButton.removeEventListener('click', this.onFavoriteButtonClick);
+    this.favoriteButton.removeEventListener('click', this.#onFavoriteButtonClick);
   };
 }

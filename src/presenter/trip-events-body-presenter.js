@@ -1,25 +1,27 @@
 import TripSortView from '../view/trip-sort-view.js';
 import TripEventListView from '../view/trip-event-list-view.js';
-// import TripEventChangingPresenter from './trip-event-changing-presenter.js';
 import TripEventView from '../view/trip-event-view.js';
 import TripEventChangingView from '../view/trip-event-changing-view.js';
 import {render} from '../render.js';
 
 export default class TripEventsBodyPresenter {
-  constructor() {
+  #tripEventsBodyContainer;
+  #tripEventsModel;
 
+  constructor(tripEventsBodyContainer, tripEventsModel) {
+    this.#tripEventsBodyContainer = tripEventsBodyContainer;
+    this.#tripEventsModel = tripEventsModel;
   }
 
-  init = (tripEventsBodyContainer, tripEventsModel) => {
+  init = () => {
     this.tripEventListComponent = new TripEventListView();
-    this.tripEventsModel = tripEventsModel;
-    this.tripEvents = this.tripEventsModel.getTripEvents();
+    this.tripEvents = this.#tripEventsModel.getTripEvents();
 
-    this.destinations = this.tripEventsModel.getDestinations();
-    this.offers = this.tripEventsModel.getOffers();
+    this.destinations = this.#tripEventsModel.getDestinations();
+    this.offers = this.#tripEventsModel.getOffers();
 
-    render(new TripSortView(), tripEventsBodyContainer);
-    render(this.tripEventListComponent, tripEventsBodyContainer);
+    render(new TripSortView(), this.#tripEventsBodyContainer);
+    render(this.tripEventListComponent, this.#tripEventsBodyContainer);
 
     this.tripEventListContainer = this.tripEventListComponent.getElement();
 
@@ -34,9 +36,26 @@ export default class TripEventsBodyPresenter {
 
     tripEventComponent.setRollupButtonClickHandler(() => {
       const tripEventChangingComponent = new TripEventChangingView(tripEventData, this.destinations, this.offers);
+      const tripEventChangingForm = tripEventChangingComponent.getElement();
 
-      this.tripEventListContainer.replaceChild(tripEventChangingComponent.getElement(), tripEventElement);
+      const onRollupForm = () => {
+        this.tripEventListContainer.replaceChild(tripEventElement, tripEventChangingForm);
+      };
+
+      // обраборчики для формы редактирования
+      tripEventChangingComponent.setRollupButtonClickHandler(onRollupForm);
+      tripEventChangingComponent.setEscapeKeydownHandler(onRollupForm);
+      tripEventChangingComponent.setSubmitHandler(onRollupForm);
+
+      tripEventChangingComponent.setDeleteButtonClickHandler(() => {
+        tripEventComponent.removeEventListeners();
+        tripEventComponent.removeElement();
+      });
+
+      this.tripEventListContainer.replaceChild(tripEventChangingForm, tripEventElement);
     });
+
+    tripEventComponent.setFavoriteButtonClickHandler();
 
     render(tripEventComponent, this.tripEventListContainer);
   };
