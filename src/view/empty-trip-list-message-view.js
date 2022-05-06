@@ -1,9 +1,16 @@
 import View from './view.js';
 
-const createEmptyTripListMessageTemplate = () => ('<p class="trip-events__msg">Click New Event to create your first point</p>');
+const createEmptyTripListMessageTemplate = (message = 'Сообщение') => (`<p class="trip-events__msg">${message}</p>`);
 
 export default class EmptyTripListMessageView extends View {
+  #message = null;
+
+  constructor(message) {
+    super();
+    this.#message = message;
+  }
+
   get template() {
-    return createEmptyTripListMessageTemplate();
+    return createEmptyTripListMessageTemplate(this.#message);
   }
 }

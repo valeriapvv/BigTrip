@@ -36,6 +36,11 @@ export default class TripEventsBodyPresenter {
 
     this.#tripEventListContainer = this.#tripEventListComponent.element;
 
+    if (!this.#tripEvents.length) {
+      this.#renderEmptyTripListMessage();
+      return;
+    }
+
     for (const tripEventData of this.#tripEvents) {
       this.#renderTripEvent(tripEventData);
     }
@@ -65,13 +70,7 @@ export default class TripEventsBodyPresenter {
         const tripEventListLength = this.#tripEventListContainer.children.length;
 
         if (!tripEventListLength) {
-          this.#emptyTripListMessageComponent = new EmptyTripListMessageView();
-          const emptyTripListMessage = this.#emptyTripListMessageComponent.element;
-
-          this.#tripEventsBodyContainer.replaceChild(emptyTripListMessage, this.#tripEventListContainer);
-
-          this.#tripSortElement = this.#tripSortComponent.element;
-          this.#tripSortElement.remove();
+          this.#renderEmptyTripListMessage();
         }
       });
 
@@ -83,4 +82,26 @@ export default class TripEventsBodyPresenter {
     render(tripEventComponent, this.#tripEventListContainer);
   };
 
+  #renderEmptyTripListMessage = () => {
+    const tripFilters = document.querySelector('.trip-filters')['trip-filter'];
+    const tripFilterValue = tripFilters.value.toLowerCase();
+
+    tripFilters.forEach((it) => {it.disabled = true;});
+
+    const filterValueToMessage = {
+      everything:'Click New Event to create your first point',
+      past: 'There are no past events now',
+      future:'There are no future events now',
+    };
+
+    const message = filterValueToMessage[tripFilterValue];
+
+    this.#emptyTripListMessageComponent = new EmptyTripListMessageView(message);
+    const emptyTripListMessage = this.#emptyTripListMessageComponent.element;
+
+    this.#tripEventsBodyContainer.replaceChild(emptyTripListMessage, this.#tripEventListContainer);
+
+    this.#tripSortElement = this.#tripSortComponent.element;
+    this.#tripSortElement.remove();
+  };
 }
