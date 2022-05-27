@@ -1,4 +1,14 @@
-const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+const TYPES = [
+  'taxi',
+  'bus',
+  'train',
+  'ship',
+  'drive',
+  'flight',
+  'check-in',
+  'sightseeing',
+  'restaurant',
+];
 
 const POINTS = [
   'Reykjavík',
@@ -7,7 +17,13 @@ const POINTS = [
   'Reykjanesbær',
   'Akureyri',
   'Garðabær',
-  'Mosfellsbær'
+  'Mosfellsbær',
 ];
 
-export {TYPES, POINTS};
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past',
+};
+
+export {TYPES, POINTS, FilterType};

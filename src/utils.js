@@ -21,8 +21,8 @@ const getRandomInteger = (minNumber, maxNumber) => getRandomNumber(minNumber, ma
 
 const getRandomArrayElement = (array) => array[getRandomInteger(0, array.length - 1)];
 
-const generateRandomArray = (lengthRange, generateElement) => Array.from(
-  {length: getRandomInteger(lengthRange[0], lengthRange[1])},
+const generateRandomArray = (minLength, maxLength, generateElement) => Array.from(
+  {length: getRandomInteger(minLength, maxLength)},
   generateElement,
 );
 
@@ -45,13 +45,20 @@ const createRandomUniqueIntegerGenerator = (min, max) => {
   };
 };
 
+
 // Работа с датами
-const createNewDateChain = (startDate = dayjs()) => {
+const defaultStartDate = dayjs().add(getRandomInteger(-60*24*10, 60*24*5), 'minute');
+
+const createNewDateChain = (startDate = defaultStartDate) => {
   // каждая следующая дата после предыдущейы
   let date = startDate;
 
   return ({
     from(timeBetweenEvents) {
+      if (dayjs(date).isSame(dayjs(startDate), 'minute')) {
+        return date;
+      }
+
       date = dayjs(date).add(timeBetweenEvents, 'minute');
 
       return date;
@@ -76,6 +83,11 @@ const getDateDifference = (date1, date2) => {
   return `${days >= 1 ? `${days}D`: ''} ${hours >= 1 ? `${hours  }H` : ''} ${minutes < 10 ? '0' : ''}${minutes}M`;
 };
 
+//true
+const isFutureEvent = (event) => dayjs().isBefore(dayjs(event.dateFrom), 'minute');
+
+const isPastEvent = (event) => dayjs().isAfter(dayjs(event.dateFrom), 'minute');
+
 export {
   getRandomArrayElement,
   getRandomInteger,
@@ -84,5 +96,7 @@ export {
   createNewDateChain,
   formatDate,
   getDateDifference,
+  isFutureEvent,
+  isPastEvent,
 };
 

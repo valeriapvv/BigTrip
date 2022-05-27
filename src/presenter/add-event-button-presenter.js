@@ -7,7 +7,11 @@ export default class AddEventButtonPresenter {
   init = (tripEventEditContainer) => {
     eventAddButton.addEventListener('click', () => {
       const tripEventEditPresenter = new TripEventEditPresenter();
-      tripEventEditPresenter.init(tripEventEditContainer, () => { eventAddButton.disabled = false; });
+
+      tripEventEditPresenter.init(
+        tripEventEditContainer,
+        () => { eventAddButton.disabled = false; },
+      );
 
       eventAddButton.disabled = true;
     });

@@ -3,19 +3,32 @@ import TripEventsBodyPresenter from './presenter/trip-events-body-presenter.js';
 import TripFiltersPresenter from './presenter/trip-filters-presenter.js';
 import AddEventButtonPresenter from './presenter/add-event-button-presenter.js';
 import TripEventsModel from './model/trip-events-model.js';
+import {createFilters} from './filter.js';
 
 const tripMainSite = document.querySelector('.trip-main');
 const tripFiltersSite = tripMainSite.querySelector('.trip-controls__filters');
 const tripEventsBodySite = document.querySelector('.trip-events');
 
-const tripFiltersPresenter = new TripFiltersPresenter();
+const tripEventsModel = new TripEventsModel();
+
+const tripEvents = tripEventsModel.tripEvents;
+const filters = createFilters(tripEvents);
+
+
 const tripInfoPresenter = new TripInfoPresenter();
-const tripEventsBodyPresenter = new TripEventsBodyPresenter(tripEventsBodySite, new TripEventsModel());
 const addEventButtonPresenter = new AddEventButtonPresenter();
 
-tripFiltersPresenter.init(tripFiltersSite);
 tripInfoPresenter.init(tripMainSite);
 
+
+const tripEventsBodyPresenter = new TripEventsBodyPresenter(tripEventsBodySite, tripEventsModel);
+const tripFiltersPresenter = new TripFiltersPresenter(tripEvents, filters, tripFiltersSite);
+
+//передаю презентер, чтоб перерисовать точки по
+// выбранному фильтру
+tripFiltersPresenter.init(tripEventsBodyPresenter);
+
+//отрисовывает точки
 tripEventsBodyPresenter.init();
 
 addEventButtonPresenter.init(document.querySelector('.trip-events__list'));

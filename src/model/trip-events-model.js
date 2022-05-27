@@ -4,10 +4,7 @@ export default class TripEventsModel {
   #tripEvents = (() => {
     let id = 0;
 
-    return Array.from({length: 10}, () => {
-      id++;
-      return generatePoint(id);
-    });
+    return Array.from({length: 20}, () => generatePoint(++id));
   })();
 
   #destinations = destinations;

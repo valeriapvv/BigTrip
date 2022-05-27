@@ -10,29 +10,31 @@ import {TYPES, POINTS} from './constants.js';
 const destinations = POINTS.map((it) => ({
   'name': it,
   'description': `${it}'s description: Iceland is an island, a European country, located midway between North America and mainland Europe. It lies just below the Arctic Circle between 64 and 66 degrees north. The capital is Reykjavik. It is the northernmost capital in the world and is located exactly halfway between New York and Moscow.`,
-  'pictures': generateRandomArray([0, 10], () => ({
-    'src': `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
-    'description': `${it}'s photo`
-  })),
+  'pictures': generateRandomArray(0, 10,
+    () => ({
+      'src': `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
+      'description': `${it}'s photo`
+    })
+  ),
 }));
 
-const setOfferListGenerator = (offerType) => {
+const getOffersGenerator = (offerType) => {
   let id = 0;
 
-  return () => generateRandomArray([1, 5], () => {
-    id++;
+  return () => generateRandomArray(1, 5,
+    () => {
+      id++;
 
-    return ({
-      'id': id,
-      'title': `${offerType} Offer ${id}`,
-      'price': getRandomInteger(20, 200)
+      return ({
+        'id': id,
+        'title': `${offerType} Offer ${id}`,
+        'price': getRandomInteger(20, 200)
+      });
     });
-  });
-
 };
 
 const generateOffer = (offerType) => {
-  const genarateOffers = setOfferListGenerator(offerType);
+  const genarateOffers = getOffersGenerator(offerType);
 
   return ({
     'type': offerType,
@@ -50,7 +52,7 @@ const getActiveOffers = (offerType) => {
 
   const getOfferId = createRandomUniqueIntegerGenerator(1, offerListLength);
 
-  const activeOffersIds = generateRandomArray([0, offerListLength], getOfferId);
+  const activeOffersIds = generateRandomArray(0, offerListLength, getOfferId);
 
   return activeOffersIds.sort((a,b) => a - b);
 };

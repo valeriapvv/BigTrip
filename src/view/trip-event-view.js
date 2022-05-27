@@ -2,6 +2,14 @@ import View from './view.js';
 import {findTypeOffers} from '../data/trip-data-generation.js';
 import {formatDate, getDateDifference} from '../utils.js';
 
+const createSelectedOffersTemplate = (selectedOffers) => selectedOffers.map((it) => (
+  `<li class="event__offer">
+    <span class="event__offer-title">${it.title}</span>
+    &plus;&euro;&nbsp;
+    <span class="event__offer-price">${it.price}</span>
+   </li>`)
+).join('');
+
 const createTripEventTemplate = (tripEvent, allOffers) => {
   const {
     basePrice,
@@ -40,12 +48,7 @@ const createTripEventTemplate = (tripEvent, allOffers) => {
            </p>
            <h4 class="visually-hidden">Offers:</h4>
            <ul class="event__selected-offers">
-             ${offerList.map((it) => `
-              <li class="event__offer">
-               <span class="event__offer-title">${it.title}</span>
-               &plus;&euro;&nbsp;
-               <span class="event__offer-price">${it.price}</span>
-              </li>`).join('')}
+             ${createSelectedOffersTemplate(offerList)}
            </ul>
            <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
              <span class="visually-hidden">Add to favorite</span>

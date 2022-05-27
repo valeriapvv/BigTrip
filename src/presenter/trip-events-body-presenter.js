@@ -22,16 +22,31 @@ export default class TripEventsBodyPresenter {
     this.#tripEventsModel = tripEventsModel;
   }
 
+  get tripEvents() {
+    return this.#tripEvents;
+  }
+
+  set tripEvents(filteredTripEvents) {
+    this.#tripEvents = filteredTripEvents;
+  }
+
   init = () => {
+
+    if (!this.#tripEvents) {
+      this.#tripEvents = this.#tripEventsModel.tripEvents;
+      this.#destinations = this.#tripEventsModel.destinations;
+      this.#offers = this.#tripEventsModel.offers;
+
+      this.#tripSortComponent = new TripSortView();
+
+      render(this.#tripSortComponent, this.#tripEventsBodyContainer);
+    } else {
+      this.#tripEventListComponent.element.remove();
+      this.#tripEventListComponent.removeElement();
+      this.#tripEventListContainer.remove();
+    }
+
     this.#tripEventListComponent = new TripEventListView();
-    this.#tripEvents = this.#tripEventsModel.tripEvents;
-
-    this.#destinations = this.#tripEventsModel.destinations;
-    this.#offers = this.#tripEventsModel.offers;
-
-    this.#tripSortComponent = new TripSortView();
-
-    render(this.#tripSortComponent, this.#tripEventsBodyContainer);
     render(this.#tripEventListComponent, this.#tripEventsBodyContainer);
 
     this.#tripEventListContainer = this.#tripEventListComponent.element;
@@ -85,8 +100,6 @@ export default class TripEventsBodyPresenter {
   #renderEmptyTripListMessage = () => {
     const tripFilters = document.querySelector('.trip-filters')['trip-filter'];
     const tripFilterValue = tripFilters.value.toLowerCase();
-
-    tripFilters.forEach((it) => {it.disabled = true;});
 
     const filterValueToMessage = {
       everything:'Click New Event to create your first point',

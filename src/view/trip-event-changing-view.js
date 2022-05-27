@@ -3,6 +3,37 @@ import {findTypeOffers} from '../data/trip-data-generation.js';
 import {TYPES} from '../data/constants.js';
 import {formatDate} from '../utils.js';
 
+const createEventTypeSelectTemplate = (eventType) => TYPES.map((it) => (
+  `<div class="event__type-item">
+    <input id="event-type-${it}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${it}"
+    ${it === eventType ? 'checked' : ''}>
+    <label class="event__type-label  event__type-label--${it}" for="event-type-${it}-1">${it}</label>
+  </div>`
+)).join('');
+
+const createAvailableOffersTemplate = (typeOffers, eventOffers) => typeOffers.map(({id, title, price}, index) => (
+  `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${index+1}" type="checkbox" name="event-offer-luggage"
+      ${eventOffers.includes(id) ? 'checked' : ''}>
+    <label class="event__offer-label" for="event-offer-luggage-${index+1}">
+      <span class="event__offer-title">${title}</span>
+              &plus;&euro;&nbsp;
+      <span class="event__offer-price">${price}</span>
+    </label>
+  </div>`
+)).join('');
+
+const createPhotosContainerTemplate = (pictures) => (
+  `<div class="event__photos-container">
+    <div class="event__photos-tape">
+      ${pictures.map((it) => (`
+        <img class="event__photo" src="${it.src}" alt="${it.description}">
+        `)).join('')}
+      
+    </div>
+  </div>`
+);
+
 const createTripEventChangingTemplate = (tripEvent, allOffers) => {
   const {
     basePrice,
@@ -34,14 +65,7 @@ const createTripEventChangingTemplate = (tripEvent, allOffers) => {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-
-                ${TYPES.map((it) => (`
-                	<div class="event__type-item">
-                  	<input id="event-type-${it}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${it}"
-                  	${it === type ? 'checked' : ''}>
-                  	<label class="event__type-label  event__type-label--${it}" for="event-type-${it}-1">${it}</label>
-                	</div>
-                	`)).join('')}
+                ${createEventTypeSelectTemplate(type)}
               </fieldset>
             </div>
           </div>
@@ -85,34 +109,14 @@ const createTripEventChangingTemplate = (tripEvent, allOffers) => {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-            	${typeOffers.map(({id, title, price}, index) => (`
-            			<div class="event__offer-selector">
-                    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${index+1}" type="checkbox" name="event-offer-luggage"
-                    	${offers.includes(id) ? 'checked' : ''}>
-                    <label class="event__offer-label" for="event-offer-luggage-${index+1}">
-                      <span class="event__offer-title">${title}</span>
-                              &plus;&euro;&nbsp;
-                      <span class="event__offer-price">${price}</span>
-                    </label>
-                  </div>
-            			`)).join('')}
+            	${createAvailableOffersTemplate(typeOffers, offers)}
             </div>
           </section>
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
             <p class="event__destination-description">${description}</p>
-            ${isExistPictureList ?
-      (`
-            		<div class="event__photos-container">
-          				<div class="event__photos-tape">
-          					${pictures.map((it) => (`
-          						<img class="event__photo" src="${it.src}" alt="${it.description}">
-                      `)).join('')}
-            				
-          				</div>
-        				</div>
-        			`) : ''}
+            ${isExistPictureList ? createPhotosContainerTemplate(pictures) : ''}
           </section>
         </section>
       </form>
