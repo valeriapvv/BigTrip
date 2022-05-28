@@ -1,6 +1,5 @@
 import View from './view.js';
-import {findTypeOffers} from '../data/trip-data-generation.js';
-import {formatDate, getDateDifference} from '../utils.js';
+import {formatDate, getDateDifference, findSelectedOffers} from '../utils.js';
 
 const createSelectedOffersTemplate = (selectedOffers) => selectedOffers.map((it) => (
   `<li class="event__offer">
@@ -16,7 +15,6 @@ const createTripEventTemplate = (tripEvent, allOffers) => {
     destination,
     dateFrom,
     dateTo,
-    offers, // массив с id
     isFavorite,
     type
   } = tripEvent;
@@ -24,7 +22,7 @@ const createTripEventTemplate = (tripEvent, allOffers) => {
 
   const humanizedDuration = getDateDifference(dateFrom, dateTo);
 
-  const offerList = findTypeOffers(type, allOffers).filter(({id}) => offers.includes(id));
+  const offerList = findSelectedOffers(tripEvent, allOffers);
 
   return (`<li class="trip-events__item">
          <div class="event">

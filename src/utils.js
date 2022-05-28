@@ -45,6 +45,9 @@ const createRandomUniqueIntegerGenerator = (min, max) => {
   };
 };
 
+const findTypeOffers = (offerType, allOffers) => allOffers.find(({type}) => type === offerType).offers;
+
+const findSelectedOffers = (point, allOffers) => findTypeOffers(point.type, allOffers).filter(({id}) => point.offers.includes(id));
 
 // Работа с датами
 const defaultStartDate = dayjs().add(getRandomInteger(-60*24*10, 60*24*5), 'minute');
@@ -88,15 +91,31 @@ const isFutureEvent = (event) => dayjs().isBefore(dayjs(event.dateFrom), 'minute
 
 const isPastEvent = (event) => dayjs().isAfter(dayjs(event.dateFrom), 'minute');
 
+const findStartDate = (points) => points.reduce((startDate, point) => {
+  const currentDate = dayjs(point.dateFrom);
+
+  return startDate.isAfter(currentDate) ? currentDate : startDate;
+}, dayjs(points[0].dateFrom));
+
+const findEndDate = (points) => points.reduce((endDate, point) => {
+  const currentDate = dayjs(point.dateTo);
+
+  return endDate.isBefore(currentDate) ? currentDate : endDate;
+}, dayjs(points[0].dateTo));
+
 export {
   getRandomArrayElement,
   getRandomInteger,
   generateRandomArray,
   createRandomUniqueIntegerGenerator,
+  findTypeOffers,
+  findSelectedOffers,
   createNewDateChain,
   formatDate,
   getDateDifference,
   isFutureEvent,
   isPastEvent,
+  findStartDate,
+  findEndDate,
 };
 

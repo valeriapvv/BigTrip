@@ -3,6 +3,7 @@ import {
   getRandomArrayElement,
   generateRandomArray,
   createRandomUniqueIntegerGenerator,
+  findTypeOffers,
   createNewDateChain,
 } from '../utils.js';
 import {TYPES, POINTS} from './constants.js';
@@ -44,8 +45,6 @@ const generateOffer = (offerType) => {
 
 const offers = TYPES.map((it) => generateOffer(it));
 
-const findTypeOffers = (offerType, allOffers) => allOffers.find(({type}) => type === offerType).offers;
-
 const getActiveOffers = (offerType) => {
   const typeOffers = findTypeOffers(offerType, offers);
   const offerListLength = typeOffers.length;
@@ -77,4 +76,4 @@ const generatePoint = (id) => {
   });
 };
 
-export {generatePoint, destinations, offers, findTypeOffers};
+export {generatePoint, destinations, offers};

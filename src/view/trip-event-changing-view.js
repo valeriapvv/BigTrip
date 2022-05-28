@@ -1,7 +1,6 @@
 import View from './view.js';
-import {findTypeOffers} from '../data/trip-data-generation.js';
 import {TYPES} from '../data/constants.js';
-import {formatDate} from '../utils.js';
+import {formatDate, findTypeOffers} from '../utils.js';
 
 const createEventTypeSelectTemplate = (eventType) => TYPES.map((it) => (
   `<div class="event__type-item">

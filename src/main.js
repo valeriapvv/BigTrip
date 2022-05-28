@@ -15,10 +15,10 @@ const tripEvents = tripEventsModel.tripEvents;
 const filters = createFilters(tripEvents);
 
 
-const tripInfoPresenter = new TripInfoPresenter();
+const tripInfoPresenter = new TripInfoPresenter(tripMainSite, tripEventsModel);
 const addEventButtonPresenter = new AddEventButtonPresenter();
 
-tripInfoPresenter.init(tripMainSite);
+tripInfoPresenter.init();
 
 
 const tripEventsBodyPresenter = new TripEventsBodyPresenter(tripEventsBodySite, tripEventsModel);
