@@ -1,4 +1,4 @@
-import View from './view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {findStartDate, findEndDate, formatDate} from '../utils.js';
 import dayjs from 'dayjs';
 
@@ -11,7 +11,7 @@ const createTripInfoDatesTemplate = (tripEvents) => {
   return `<p class="trip-info__dates">${humanizeStartDate}&nbsp;&mdash;&nbsp;${humanizeTerminalDate}</p>`;
 };
 
-export default class TripInfoDatesView extends View {
+export default class TripInfoDatesView extends AbstractView {
   #tripEvents;
 
   constructor(tripEvents) {

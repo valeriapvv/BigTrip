@@ -1,4 +1,4 @@
-import View from './view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createTripInfoTitleTemplate = (tripEvents) => {
   const points = tripEvents.map(({destination}) => destination.name);
@@ -13,7 +13,7 @@ const createTripInfoTitleTemplate = (tripEvents) => {
   return `<h1 class="trip-info__title">${taskPath}</h1>`;
 };
 
-export default class TripInfoTitleView extends View {
+export default class TripInfoTitleView extends AbstractView {
   #tripEvents;
 
   constructor(tripEvents) {

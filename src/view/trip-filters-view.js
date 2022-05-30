@@ -1,4 +1,4 @@
-import View from './view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {filter} from '../filter.js';
 
 const createTripFilterItemTemplate = (tripFilter, isChecked) => {
@@ -9,7 +9,7 @@ const createTripFilterItemTemplate = (tripFilter, isChecked) => {
       <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${name}" 
       ${count === 0 ? 'disabled' : ''}
       ${isChecked ? 'checked' : ''}>
-      <label class="trip-filters__filter-label" for="filter-${name}">${name.replace(name[0], name[0].toUpperCase())}</label>
+      <label class="trip-filters__filter-label" for="filter-${name}">${name.replace(name[0], name[0].toUpperCase())} ${count}</label>
     </div>
   `);
 };
@@ -22,9 +22,11 @@ const createTripFiltersTemplate = (filters) => (
 );
 
 
-export default class TripFiltersView extends View {
+export default class TripFiltersView extends AbstractView {
   #filters = null;
   #filterValue = null;
+  #tripListPresenter = null;
+  #tripEvents = null;
 
   constructor(filters) {
     super();
@@ -36,14 +38,14 @@ export default class TripFiltersView extends View {
   }
 
   setFiltersChangeHandler = (tripEvents, tripListPresenter) => {
-    this._tripListPresenter = tripListPresenter;
-    this._tripEvents = tripEvents;
+    this.#tripListPresenter = tripListPresenter;
+    this.#tripEvents = tripEvents;
     this.element.addEventListener('change', this.#filtersChangeHandler);
   };
 
   #filtersChangeHandler = () => {
     const value = this.element['trip-filter'].value;
-    this._tripListPresenter.tripEvents = filter[value](this._tripEvents);
-    this._tripListPresenter.init();
+    this.#tripListPresenter.tripEvents = filter[value](this.#tripEvents);
+    this.#tripListPresenter.init();
   };
 }

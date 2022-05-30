@@ -1,4 +1,4 @@
-import View from './view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createTripInfoSectionTemplate = () => (
   `<section class="trip-main__trip-info trip-info">
@@ -6,7 +6,7 @@ const createTripInfoSectionTemplate = () => (
    </section>`
 );
 
-export default class TripInfoSectionView extends View {
+export default class TripInfoSectionView extends AbstractView {
   get template() {
     return createTripInfoSectionTemplate();
   }

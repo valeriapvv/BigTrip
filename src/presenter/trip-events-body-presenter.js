@@ -1,9 +1,10 @@
 import TripSortView from '../view/trip-sort-view.js';
 import TripEventListView from '../view/trip-event-list-view.js';
-import TripEventView from '../view/trip-event-view.js';
-import TripEventChangingView from '../view/trip-event-changing-view.js';
 import EmptyTripListMessageView from '../view/empty-trip-list-message-view.js';
-import {render} from '../render.js';
+
+import TripEventPresenter from './trip-event-presenter.js';
+
+import {render} from '../framework/render.js';
 
 export default class TripEventsBodyPresenter {
   #tripEventsBodyContainer = null;
@@ -56,45 +57,16 @@ export default class TripEventsBodyPresenter {
       return;
     }
 
-    for (const tripEventData of this.#tripEvents) {
-      this.#renderTripEvent(tripEventData);
-    }
+    this.#renderTripEvents(this.#tripEvents);
   };
 
-  #renderTripEvent = (tripEventData) => {
-    const tripEventComponent = new TripEventView(tripEventData, this.#destinations, this.#offers);
-    const tripEventElement = tripEventComponent.element;
+  #renderTripEvents = (tripEvents) => {
+    tripEvents.forEach((it) => this.#renderTripEvent(it));
+  };
 
-    tripEventComponent.setRollupButtonClickHandler(() => {
-      const tripEventChangingComponent = new TripEventChangingView(tripEventData, this.#destinations, this.#offers);
-      const tripEventChangingForm = tripEventChangingComponent.element;
-
-      const onRollupForm = () => {
-        this.#tripEventListContainer.replaceChild(tripEventElement, tripEventChangingForm);
-      };
-
-      // обраборчики для формы редактирования
-      tripEventChangingComponent.setRollupButtonClickHandler(onRollupForm);
-      tripEventChangingComponent.setEscapeKeydownHandler(onRollupForm);
-      tripEventChangingComponent.setSubmitHandler(onRollupForm);
-
-      tripEventChangingComponent.setDeleteButtonClickHandler(() => {
-        tripEventComponent.removeEventListeners();
-        tripEventComponent.removeElement();
-
-        const tripEventListLength = this.#tripEventListContainer.children.length;
-
-        if (!tripEventListLength) {
-          this.#renderEmptyTripListMessage();
-        }
-      });
-
-      this.#tripEventListContainer.replaceChild(tripEventChangingForm, tripEventElement);
-    });
-
-    tripEventComponent.setFavoriteButtonClickHandler();
-
-    render(tripEventComponent, this.#tripEventListContainer);
+  #renderTripEvent = (tripEvent) => {
+    const point = new TripEventPresenter(this.#tripEventListComponent);
+    point.init(tripEvent, this.#offers, this.#destinations);
   };
 
   #renderEmptyTripListMessage = () => {

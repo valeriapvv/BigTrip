@@ -1,4 +1,4 @@
-import View from './view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createTripEventEditTemplate = () => (
   `<li class="trip-events__item">
@@ -165,7 +165,7 @@ const createTripEventEditTemplate = () => (
 </li>`
 );
 
-export default class TripEventEditView extends View {
+export default class TripEventEditView extends AbstractView {
   get template() {
     return createTripEventEditTemplate();
   }

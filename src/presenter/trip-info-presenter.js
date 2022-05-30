@@ -2,7 +2,7 @@ import TripInfoSectionView from '../view/trip-info-section-view.js';
 import TripInfoTitleView from '../view/trip-info-title-view.js';
 import TripInfoDatesView from '../view/trip-info-dates-view.js';
 import TripInfoCostView from '../view/trip-info-cost-view.js';
-import {render, RenderPosition} from '../render.js';
+import {render, RenderPosition} from '../framework/render.js';
 
 export default class TripInfoPresenter {
   #tripInfoContainerSite;

@@ -1,26 +1,32 @@
-import View from './view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {TYPES} from '../data/constants.js';
 import {formatDate, findTypeOffers} from '../utils.js';
 
-const createEventTypeSelectTemplate = (eventType) => TYPES.map((it) => (
+const createEventTypeSelectTemplate = (eventType) =>  TYPES.map((it) => (
   `<div class="event__type-item">
-    <input id="event-type-${it}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${it}"
-    ${it === eventType ? 'checked' : ''}>
-    <label class="event__type-label  event__type-label--${it}" for="event-type-${it}-1">${it}</label>
-  </div>`
+        <input id="event-type-${it}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${it}"
+        ${it === eventType ? 'checked' : ''}>
+        <label class="event__type-label  event__type-label--${it}" for="event-type-${it}-1">${it}</label>
+      </div>`
 )).join('');
 
-const createAvailableOffersTemplate = (typeOffers, eventOffers) => typeOffers.map(({id, title, price}, index) => (
-  `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${index+1}" type="checkbox" name="event-offer-luggage"
-      ${eventOffers.includes(id) ? 'checked' : ''}>
-    <label class="event__offer-label" for="event-offer-luggage-${index+1}">
-      <span class="event__offer-title">${title}</span>
-              &plus;&euro;&nbsp;
-      <span class="event__offer-price">${price}</span>
-    </label>
-  </div>`
-)).join('');
+const createAvailableOffersTemplate = (typeOffers, eventOffers) => (
+  `<section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+      ${typeOffers.map(({id, title, price}, index) => (
+    `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${index+1}" type="checkbox" name="event-offer-luggage"
+          ${eventOffers.includes(id) ? 'checked' : ''}>
+        <label class="event__offer-label" for="event-offer-luggage-${index+1}">
+          <span class="event__offer-title">${title}</span>
+                  &plus;&euro;&nbsp;
+          <span class="event__offer-price">${price}</span>
+        </label>
+      </div>`)).join('')}
+    </div>
+  </section>`
+);
 
 const createPhotosContainerTemplate = (pictures) => (
   `<div class="event__photos-container">
@@ -33,7 +39,7 @@ const createPhotosContainerTemplate = (pictures) => (
   </div>`
 );
 
-const createTripEventChangingTemplate = (tripEvent, allOffers) => {
+const createTripEventChangingTemplate = (tripEvent, allOffers, destinations) => {
   const {
     basePrice,
     destination,
@@ -49,6 +55,9 @@ const createTripEventChangingTemplate = (tripEvent, allOffers) => {
   const typeOffers = findTypeOffers(type, allOffers);
 
   const isExistPictureList = !!(pictures && pictures.length);
+  const isExistOfferList = !!(typeOffers && typeOffers.length);
+
+  const pointNames = destinations.map((it) => it.name);
 
   return (`
 		<li class="trip-events__item">
@@ -73,12 +82,14 @@ const createTripEventChangingTemplate = (tripEvent, allOffers) => {
             <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
+
+            <input class="event__input  event__input--destination" id="event-destination-1" 
+            type="text" name="event-destination" value="${name}" list="destination-list-1">
+
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${pointNames.map((it) => `<option value="${it}"></option>`).join('')}
             </datalist>
+
           </div>
 
           <div class="event__field-group  event__field-group--time">
@@ -104,13 +115,8 @@ const createTripEventChangingTemplate = (tripEvent, allOffers) => {
           </button>
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
-            <div class="event__available-offers">
-            	${createAvailableOffersTemplate(typeOffers, offers)}
-            </div>
-          </section>
+          ${isExistOfferList ? createAvailableOffersTemplate(typeOffers, offers) : ''}
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -123,7 +129,7 @@ const createTripEventChangingTemplate = (tripEvent, allOffers) => {
 };
 
 
-export default class TripEventChangingView extends View {
+export default class TripEventChangingView extends AbstractView {
   #tripEvent = null;
   #destinations = null;
   #offers = null;
@@ -131,7 +137,7 @@ export default class TripEventChangingView extends View {
   #form = null;
   #deleteButton = null;
 
-  constructor(tripEvent, destinations, allOffers) {
+  constructor(tripEvent, allOffers, destinations) {
     super();
     this.#tripEvent = tripEvent;
     this.#destinations = destinations;
@@ -139,30 +145,30 @@ export default class TripEventChangingView extends View {
   }
 
   get template() {
-    return createTripEventChangingTemplate(this.#tripEvent, this.#offers);
+    return createTripEventChangingTemplate(this.#tripEvent, this.#offers, this.#destinations);
   }
 
   setRollupButtonClickHandler = (onRollup) => {
-    this._onRollup = onRollup;
+    this._callback.onRollup = onRollup;
     this.#rollupButton = this.element.querySelector('.event__rollup-btn');
 
     this.#rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
   };
 
   setEscapeKeydownHandler = (onKeydown) => {
-    this._onKeydown = onKeydown;
+    this._callback.onKeydown = onKeydown;
     document.addEventListener('keydown', this.#onEscapeKeydown);
   };
 
   setSubmitHandler = (onSubmit) => {
-    this._onSubmit = onSubmit;
+    this._callback.onSubmit = onSubmit;
     this.#form = this.element.querySelector('form');
 
     this.#form.addEventListener('submit', this.#submitHandler);
   };
 
   setDeleteButtonClickHandler = (onDelete) => {
-    this._onDelete = onDelete;
+    this._callback.onDelete = onDelete;
     this.#deleteButton = this.element.querySelector('.event__reset-btn');
     this.#deleteButton.addEventListener('click', this.#deleteButtonClickHandler);
   };
@@ -172,16 +178,17 @@ export default class TripEventChangingView extends View {
     this.#deleteButton.removeEventListener('click', this.#deleteButtonClickHandler);
     document.removeEventListener('keydown', this.#onEscapeKeydown);
     this.#form.removeEventListener('submit', this.#submitHandler);
+    // console.log("форма: удалились");
   };
 
   #rollupButtonClickHandler = () => {
-    this._onRollup();
+    this._callback.onRollup();
     this.removeEventListeners();
   };
 
   #onEscapeKeydown = (evt) => {
     if (evt.code === 'Escape') {
-      this._onKeydown();
+      this._callback.onKeydown();
       this.removeEventListeners();
     }
   };
@@ -189,7 +196,7 @@ export default class TripEventChangingView extends View {
   #submitHandler = (evt) => {
     evt.preventDefault();
 
-    this._onSubmit();
+    this._callback.onSubmit();
     this.removeEventListeners();
   };
 
@@ -198,6 +205,6 @@ export default class TripEventChangingView extends View {
     this.element.remove();
     this.removeElement();
 
-    this._onDelete();
+    this._callback.onDelete();
   };
 }

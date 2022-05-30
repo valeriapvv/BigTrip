@@ -22,7 +22,7 @@ const destinations = POINTS.map((it) => ({
 const getOffersGenerator = (offerType) => {
   let id = 0;
 
-  return () => generateRandomArray(1, 5,
+  return () => generateRandomArray(0, 5,
     () => {
       id++;
 

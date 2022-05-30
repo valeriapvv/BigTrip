@@ -1,4 +1,4 @@
-import View from './view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {findSelectedOffers} from '../utils.js';
 
 const createTripInfoCostTemplate = (tripEvents, allOffers) => {
@@ -16,7 +16,7 @@ const createTripInfoCostTemplate = (tripEvents, allOffers) => {
           </p>`;
 };
 
-export default class TripInfoCostView extends View {
+export default class TripInfoCostView extends AbstractView {
   #tripEvents;
   #allOffers;
 

@@ -1,4 +1,4 @@
-import View from './view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {formatDate, getDateDifference, findSelectedOffers} from '../utils.js';
 
 const createSelectedOffersTemplate = (selectedOffers) => selectedOffers.map((it) => (
@@ -61,14 +61,14 @@ const createTripEventTemplate = (tripEvent, allOffers) => {
        </li>`);
 };
 
-export default class TripEventView extends View {
+export default class TripEventView extends AbstractView {
   #tripEvent = null;
   #destinations = null;
   #offers = null;
   #rollupButton = null;
   #favoriteButton = null;
 
-  constructor(tripEvent, destinations, allOffers) {
+  constructor(tripEvent, allOffers, destinations) {
     super();
     this.#tripEvent = tripEvent;
     this.#destinations = destinations;
@@ -79,8 +79,13 @@ export default class TripEventView extends View {
     return createTripEventTemplate(this.#tripEvent, this.#offers);
   }
 
-  setRollupButtonClickHandler = (callback) => {
-    this._callback = callback;
+  removeElement() {
+    this.#removeEventListeners();
+    super.removeElement();
+  }
+
+  setRollupButtonClickHandler = (onClick) => {
+    this._callback.click = onClick;
     this.#rollupButton = this.element.querySelector('.event__rollup-btn');
 
     this.#rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
@@ -91,13 +96,14 @@ export default class TripEventView extends View {
     this.#favoriteButton.addEventListener('click', this.#onFavoriteButtonClick);
   };
 
-  removeEventListeners = () => {
+  #removeEventListeners = () => {
     this.#rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
     this.#favoriteButton.removeEventListener('click', this.#onFavoriteButtonClick);
+    // console.log("точка: удалились")
   };
 
   #rollupButtonClickHandler = () => {
-    this._callback();
+    this._callback.click();
   };
 
   #onFavoriteButtonClick = () => {

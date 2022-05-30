@@ -1,5 +1,5 @@
 import TripFiltersView from '../view/trip-filters-view.js';
-import {render} from '../render.js';
+import {render} from '../framework/render.js';
 
 
 export default class TripFiltersPresenter {
