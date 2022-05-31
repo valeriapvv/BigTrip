@@ -95,13 +95,13 @@ const findStartDate = (points) => points.reduce((startDate, point) => {
   const currentDate = dayjs(point.dateFrom);
 
   return startDate.isAfter(currentDate) ? currentDate : startDate;
-}, dayjs(points[0].dateFrom));
+}, dayjs(points[0]?.dateFrom));
 
 const findEndDate = (points) => points.reduce((endDate, point) => {
   const currentDate = dayjs(point.dateTo);
 
   return endDate.isBefore(currentDate) ? currentDate : endDate;
-}, dayjs(points[0].dateTo));
+}, dayjs(points[0]?.dateTo));
 
 export {
   getRandomArrayElement,

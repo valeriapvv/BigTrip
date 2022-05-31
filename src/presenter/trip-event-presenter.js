@@ -1,7 +1,7 @@
 import TripEventView from '../view/trip-event-view.js';
 import TripEventChangingView from '../view/trip-event-changing-view.js';
 import EmptyListMessagePresenter from './empty-list-message-presenter.js';
-import {render, replace} from '../framework/render.js';
+import {render, replace, remove} from '../framework/render.js';
 
 export default class TripEventPresenter {
   #pointsContainerComponent = null;
@@ -20,14 +20,33 @@ export default class TripEventPresenter {
 
   init(tripEvent,  offers,  destinations) {
     this.#tripEvent = tripEvent;
-    this.#destinations = destinations;
-    this.#offers = offers;
+    this.#destinations = destinations || this.#destinations;
+    this.#offers = offers || this.#offers;
+
+    const prevPointComponent = this.#pointComponent;
+    const prevFormComponent = this.#formComponent;
 
     this.#pointComponent = new TripEventView(tripEvent, offers, destinations);
+    this.#formComponent = new TripEventChangingView(this.#tripEvent, this.#offers, this.#destinations);
+
     this.#pointComponent.setRollupButtonClickHandler(this.#initForm);
     this.#pointComponent.setFavoriteButtonClickHandler();
 
-    render(this.#pointComponent, this.#pointsContainer);
+    if (prevPointComponent === null || prevFormComponent === null) {
+      render(this.#pointComponent, this.#pointsContainer);
+      return;
+    }
+
+    if (this.#pointsContainer.contains(prevPointComponent)) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    if(this.#pointsContainer.contains(prevFormComponent)) {
+      replace(this.#formComponent, prevFormComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevFormComponent);
   }
 
   #rollupButtonClickHandler = () => {
@@ -36,8 +55,6 @@ export default class TripEventPresenter {
   };
 
   #initForm = () => {
-    this.#formComponent = new TripEventChangingView(this.#tripEvent, this.#offers, this.#destinations);
-
     this.#formComponent.setRollupButtonClickHandler(this.#replaceFormToPoint);
     this.#formComponent.setEscapeKeydownHandler(this.#replaceFormToPoint);
     this.#formComponent.setSubmitHandler(this.#replaceFormToPoint);

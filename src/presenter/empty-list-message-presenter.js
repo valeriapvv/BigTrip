@@ -22,6 +22,7 @@ export default class EmptyListMessagePresenter {
     const message = filterValueToMessage[tripFilterValue];
 
     this.#emptyListMessageComponent = new EmptyTripListMessageView(message);
+
     replace(this.#emptyListMessageComponent, this.#pointListContainer);
 
     document.querySelector('.trip-events__trip-sort').remove(); // sortElement

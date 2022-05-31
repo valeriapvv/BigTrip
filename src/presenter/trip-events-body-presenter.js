@@ -1,6 +1,5 @@
 import TripSortView from '../view/trip-sort-view.js';
 import TripEventListView from '../view/trip-event-list-view.js';
-import EmptyTripListMessageView from '../view/empty-trip-list-message-view.js';
 
 import TripEventPresenter from './trip-event-presenter.js';
 
@@ -52,11 +51,6 @@ export default class TripEventsBodyPresenter {
 
     this.#tripEventListContainer = this.#tripEventListComponent.element;
 
-    if (!this.#tripEvents.length) {
-      this.#renderEmptyTripListMessage();
-      return;
-    }
-
     this.#renderTripEvents(this.#tripEvents);
   };
 
@@ -67,26 +61,5 @@ export default class TripEventsBodyPresenter {
   #renderTripEvent = (tripEvent) => {
     const point = new TripEventPresenter(this.#tripEventListComponent);
     point.init(tripEvent, this.#offers, this.#destinations);
-  };
-
-  #renderEmptyTripListMessage = () => {
-    const tripFilters = document.querySelector('.trip-filters')['trip-filter'];
-    const tripFilterValue = tripFilters.value.toLowerCase();
-
-    const filterValueToMessage = {
-      everything:'Click New Event to create your first point',
-      past: 'There are no past events now',
-      future:'There are no future events now',
-    };
-
-    const message = filterValueToMessage[tripFilterValue];
-
-    this.#emptyTripListMessageComponent = new EmptyTripListMessageView(message);
-    const emptyTripListMessage = this.#emptyTripListMessageComponent.element;
-
-    this.#tripEventsBodyContainer.replaceChild(emptyTripListMessage, this.#tripEventListContainer);
-
-    this.#tripSortElement = this.#tripSortComponent.element;
-    this.#tripSortElement.remove();
   };
 }
