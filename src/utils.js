@@ -114,6 +114,32 @@ const updateItem = (update, items) => {
   return [...items.slice(0, index), update, ...items.slice(index + 1)];
 };
 
+// сортировка
+const sortByDay = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+
+const sortByTime = (pointA, pointB) => {
+  const durationA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'minute');
+  const durationB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'minute');
+
+  let sortValue = durationB - durationA;
+
+  if (sortValue === 0) {
+    sortValue = sortByDay(pointA, pointB);
+  }
+
+  return sortValue;
+};
+
+const sortByPrice = (pointA, pointB) => {
+  let sortValue = pointB.basePrice - pointA.basePrice;
+
+  if (sortValue === 0) {
+    sortValue = sortByDay(pointA, pointB);
+  }
+
+  return sortValue;
+};
+
 export {
   getRandomArrayElement,
   getRandomInteger,
@@ -129,5 +155,8 @@ export {
   findStartDate,
   findEndDate,
   updateItem,
+  sortByDay,
+  sortByTime,
+  sortByPrice,
 };
 

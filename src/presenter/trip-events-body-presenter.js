@@ -1,23 +1,22 @@
 import TripSortView from '../view/trip-sort-view.js';
 import TripEventListView from '../view/trip-event-list-view.js';
-
 import TripEventPresenter from './trip-event-presenter.js';
-
 import {render} from '../framework/render.js';
-import {updateItem} from '../utils.js';
+import {updateItem, sortByDay, sortByTime, sortByPrice} from '../utils.js';
+import {SortType} from '../data/constants.js';
+
 
 export default class TripEventsBodyPresenter {
   #tripEventsBodyContainer = null;
+  #tripEventListComponent = new TripEventListView();
   #tripEventsModel = null;
-  #tripEventListComponent = null;
   #tripEvents = null;
   #destinations = null;
   #offers = null;
-  #tripEventListContainer = null;
-  #emptyTripListMessageComponent = null;
-  #tripSortComponent = null;
-  #tripSortElement = null;
   #tripEventPresenter = new Map ();
+  #tripSortComponent = new TripSortView();
+  #currentSortType = SortType.DAY;
+  // #tripEventsToSort = null;
 
   constructor(tripEventsBodyContainer, tripEventsModel) {
     this.#tripEventsBodyContainer = tripEventsBodyContainer;
@@ -36,19 +35,49 @@ export default class TripEventsBodyPresenter {
 
     if (this.#tripEvents === null) {
       this.#tripEvents = this.#tripEventsModel.tripEvents;
+      // this.#tripEventsToSort = this.#tripEvents;
       this.#destinations = this.#tripEventsModel.destinations;
       this.#offers = this.#tripEventsModel.offers;
 
-      this.#tripSortComponent = new TripSortView();
-      render(this.#tripSortComponent, this.#tripEventsBodyContainer);
+      this.#renderSort();
 
-      this.#tripEventListComponent = new TripEventListView();
       render(this.#tripEventListComponent, this.#tripEventsBodyContainer);
     } else {
       this.#clearTripEventList();
     }
 
     this.#renderTripEvents(this.#tripEvents);
+  };
+
+  #renderSort = () => {
+    render(this.#tripSortComponent, this.#tripEventsBodyContainer);
+    this.#tripSortComponent.setSortChangeHandler(this.#sortChangeHandler);
+  };
+
+  #sortChangeHandler = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortTripEvents(sortType);
+
+    this.#clearTripEventList();
+    this.#renderTripEvents(this.#tripEvents);
+  };
+
+  #sortTripEvents = (sortType) => {
+    this.#currentSortType = sortType;
+
+    switch (sortType) {
+      case SortType.TIME:
+        this.#tripEvents.sort(sortByTime);
+        return;
+      case SortType.PRICE:
+        this.#tripEvents.sort(sortByPrice);
+        return;
+      default:
+        this.#tripEvents.sort(sortByDay);
+    }
   };
 
   #renderTripEvents = (tripEvents) => {
@@ -63,6 +92,7 @@ export default class TripEventsBodyPresenter {
 
   #updateTripEvent = (update) => {
     this.#tripEvents = updateItem(update, this.#tripEvents);
+    // this.#tripEventsToSort = this.#tripEvents;
     this.#tripEventPresenter.get(update.id).init(update);
   };
 
