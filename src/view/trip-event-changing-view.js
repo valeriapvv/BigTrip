@@ -202,8 +202,6 @@ export default class TripEventChangingView extends AbstractView {
 
   #deleteButtonClickHandler = () => {
     this.removeEventListeners();
-    this.element.remove();
-    this.removeElement();
 
     this._callback.onDelete();
   };

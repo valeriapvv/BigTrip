@@ -86,7 +86,6 @@ const getDateDifference = (date1, date2) => {
   return `${days >= 1 ? `${days}D`: ''} ${hours >= 1 ? `${hours  }H` : ''} ${minutes < 10 ? '0' : ''}${minutes}M`;
 };
 
-//true
 const isFutureEvent = (event) => dayjs().isBefore(dayjs(event.dateFrom), 'minute');
 
 const isPastEvent = (event) => dayjs().isAfter(dayjs(event.dateFrom), 'minute');
@@ -103,6 +102,18 @@ const findEndDate = (points) => points.reduce((endDate, point) => {
   return endDate.isBefore(currentDate) ? currentDate : endDate;
 }, dayjs(points[0]?.dateTo));
 
+
+//
+const updateItem = (update, items) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [...items.slice(0, index), update, ...items.slice(index + 1)];
+};
+
 export {
   getRandomArrayElement,
   getRandomInteger,
@@ -117,5 +128,6 @@ export {
   isPastEvent,
   findStartDate,
   findEndDate,
+  updateItem,
 };
 

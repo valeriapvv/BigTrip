@@ -13,35 +13,43 @@ export default class TripEventPresenter {
   #pointComponent = null;
   #formComponent = null;
 
-  constructor(pointsContainerComponent) {
+  #changeData = null;
+
+  constructor(
+    pointsContainerComponent,
+    offers,
+    destinations,
+    changeData,
+  ) {
     this.#pointsContainerComponent = pointsContainerComponent;
     this.#pointsContainer = this.#pointsContainerComponent.element;
+    this.#destinations = destinations;
+    this.#offers = offers ;
+    this.#changeData = changeData;
   }
 
-  init(tripEvent,  offers,  destinations) {
+  init(tripEvent) {
     this.#tripEvent = tripEvent;
-    this.#destinations = destinations || this.#destinations;
-    this.#offers = offers || this.#offers;
 
     const prevPointComponent = this.#pointComponent;
     const prevFormComponent = this.#formComponent;
 
-    this.#pointComponent = new TripEventView(tripEvent, offers, destinations);
+    this.#pointComponent = new TripEventView(this.#tripEvent, this.#offers, this.#destinations);
     this.#formComponent = new TripEventChangingView(this.#tripEvent, this.#offers, this.#destinations);
 
     this.#pointComponent.setRollupButtonClickHandler(this.#initForm);
-    this.#pointComponent.setFavoriteButtonClickHandler();
+    this.#pointComponent.setFavoriteButtonClickHandler(this.#favoriteButtonClickHandler);
 
     if (prevPointComponent === null || prevFormComponent === null) {
       render(this.#pointComponent, this.#pointsContainer);
       return;
     }
 
-    if (this.#pointsContainer.contains(prevPointComponent)) {
+    if (this.#pointsContainer.contains(prevPointComponent.element)) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if(this.#pointsContainer.contains(prevFormComponent)) {
+    if(this.#pointsContainer.contains(prevFormComponent.element)) {
       replace(this.#formComponent, prevFormComponent);
     }
 
@@ -49,9 +57,10 @@ export default class TripEventPresenter {
     remove(prevFormComponent);
   }
 
-  #rollupButtonClickHandler = () => {
-    this.#initForm();
-    this.#replacePointToForm();
+  #favoriteButtonClickHandler = () => {
+    const isFavorite = this.#tripEvent.isFavorite;
+
+    this.#changeData({...this.#tripEvent, isFavorite: !isFavorite});
   };
 
   #initForm = () => {
@@ -59,7 +68,7 @@ export default class TripEventPresenter {
     this.#formComponent.setEscapeKeydownHandler(this.#replaceFormToPoint);
     this.#formComponent.setSubmitHandler(this.#replaceFormToPoint);
 
-    this.#formComponent.setDeleteButtonClickHandler(this.#deletePoint);
+    this.#formComponent.setDeleteButtonClickHandler(this.#deleteButtonClickHandler);
 
     this.#replacePointToForm();
   };
@@ -72,8 +81,8 @@ export default class TripEventPresenter {
     replace(this.#pointComponent, this.#formComponent);
   };
 
-  #deletePoint = () => {
-    this.#pointComponent.removeElement();
+  #deleteButtonClickHandler = () => {
+    this.destroy();
 
     const pointListLength = this.#pointsContainer.children.length;
 
@@ -81,6 +90,11 @@ export default class TripEventPresenter {
       const emptyListMesssagePresenter = new EmptyListMessagePresenter(this.#pointsContainerComponent);
       emptyListMesssagePresenter.init();
     }
+  };
+
+  destroy = () => {
+    remove(this.#pointComponent);
+    remove(this.#formComponent);
   };
 
 }

@@ -4,6 +4,7 @@ import TripEventListView from '../view/trip-event-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
 
 import {render} from '../framework/render.js';
+import {updateItem} from '../utils.js';
 
 export default class TripEventsBodyPresenter {
   #tripEventsBodyContainer = null;
@@ -16,6 +17,7 @@ export default class TripEventsBodyPresenter {
   #emptyTripListMessageComponent = null;
   #tripSortComponent = null;
   #tripSortElement = null;
+  #tripEventPresenter = new Map ();
 
   constructor(tripEventsBodyContainer, tripEventsModel) {
     this.#tripEventsBodyContainer = tripEventsBodyContainer;
@@ -59,7 +61,23 @@ export default class TripEventsBodyPresenter {
   };
 
   #renderTripEvent = (tripEvent) => {
-    const point = new TripEventPresenter(this.#tripEventListComponent);
-    point.init(tripEvent, this.#offers, this.#destinations);
+    const point = new TripEventPresenter(
+      this.#tripEventListComponent,
+      this.#offers,
+      this.#destinations,
+      this.#updateTripEvent,
+    );
+    point.init(tripEvent);
+    this.#tripEventPresenter.set(tripEvent.id, point);
+  };
+
+  #updateTripEvent = (update) => {
+    this.#tripEvents = updateItem(update, this.#tripEvents);
+    this.#tripEventPresenter.get(update.id).init(update);
+  };
+
+  #clearTripEventList = () => {
+    this.#tripEventPresenter.forEach((point) => point.destroy());
+    this.#tripEventPresenter.clear();
   };
 }
