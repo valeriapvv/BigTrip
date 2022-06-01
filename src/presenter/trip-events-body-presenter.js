@@ -56,7 +56,7 @@ export default class TripEventsBodyPresenter {
   };
 
   #renderTripEvent = (tripEvent) => {
-    const point = new TripEventPresenter(this.#tripEventListComponent, this.#updateTripEvent);
+    const point = new TripEventPresenter(this.#tripEventListComponent, this.#updateTripEvent, this.#resetTripEvents);
     point.init(tripEvent, this.#offers, this.#destinations);
     this.#tripEventPresenter.set(tripEvent.id, point);
   };
@@ -64,6 +64,10 @@ export default class TripEventsBodyPresenter {
   #updateTripEvent = (update) => {
     this.#tripEvents = updateItem(update, this.#tripEvents);
     this.#tripEventPresenter.get(update.id).init(update);
+  };
+
+  #resetTripEvents = () => {
+    this.#tripEventPresenter.forEach((point) => point.resetView());
   };
 
   #clearTripEventList = () => {

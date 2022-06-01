@@ -3,6 +3,11 @@ import TripEventChangingView from '../view/trip-event-changing-view.js';
 import EmptyListMessagePresenter from './empty-list-message-presenter.js';
 import {render, replace, remove} from '../framework/render.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class TripEventPresenter {
   #pointsContainerComponent = null;
   #pointsContainer = null;
@@ -12,13 +17,16 @@ export default class TripEventPresenter {
 
   #pointComponent = null;
   #formComponent = null;
+  #mode = Mode.DEFAULT;
 
   #changeData = null;
+  #resetPoints = null;
 
-  constructor(pointsContainerComponent,changeData) {
+  constructor(pointsContainerComponent, changeData, resetPoints) {
     this.#pointsContainerComponent = pointsContainerComponent;
     this.#pointsContainer = this.#pointsContainerComponent.element;
     this.#changeData = changeData;
+    this.#resetPoints = resetPoints;
   }
 
   init(tripEvent, offers, destinations) {
@@ -65,15 +73,18 @@ export default class TripEventPresenter {
 
     this.#formComponent.setDeleteButtonClickHandler(this.#deleteButtonClickHandler);
 
+    this.#resetPoints();
     this.#replacePointToForm();
   };
 
   #replacePointToForm = () => {
     replace(this.#formComponent, this.#pointComponent);
+    this.#mode = Mode.EDITING;
   };
 
   #replaceFormToPoint = () => {
     replace(this.#pointComponent, this.#formComponent);
+    this.#mode = Mode.DEFAULT;
   };
 
   #deleteButtonClickHandler = () => {
@@ -84,6 +95,13 @@ export default class TripEventPresenter {
     if(!pointListLength) {
       const emptyListMesssagePresenter = new EmptyListMessagePresenter(this.#pointsContainerComponent);
       emptyListMesssagePresenter.init();
+    }
+  };
+
+  resetView = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#formComponent.removeEventListeners();
+      this.#replaceFormToPoint();
     }
   };
 
