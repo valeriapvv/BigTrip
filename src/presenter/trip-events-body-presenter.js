@@ -34,24 +34,19 @@ export default class TripEventsBodyPresenter {
 
   init = () => {
 
-    if (!this.#tripEvents) {
+    if (this.#tripEvents === null) {
       this.#tripEvents = this.#tripEventsModel.tripEvents;
       this.#destinations = this.#tripEventsModel.destinations;
       this.#offers = this.#tripEventsModel.offers;
 
       this.#tripSortComponent = new TripSortView();
-
       render(this.#tripSortComponent, this.#tripEventsBodyContainer);
+
+      this.#tripEventListComponent = new TripEventListView();
+      render(this.#tripEventListComponent, this.#tripEventsBodyContainer);
     } else {
-      this.#tripEventListComponent.element.remove();
-      this.#tripEventListComponent.removeElement();
-      this.#tripEventListContainer.remove();
+      this.#clearTripEventList();
     }
-
-    this.#tripEventListComponent = new TripEventListView();
-    render(this.#tripEventListComponent, this.#tripEventsBodyContainer);
-
-    this.#tripEventListContainer = this.#tripEventListComponent.element;
 
     this.#renderTripEvents(this.#tripEvents);
   };
@@ -61,13 +56,8 @@ export default class TripEventsBodyPresenter {
   };
 
   #renderTripEvent = (tripEvent) => {
-    const point = new TripEventPresenter(
-      this.#tripEventListComponent,
-      this.#offers,
-      this.#destinations,
-      this.#updateTripEvent,
-    );
-    point.init(tripEvent);
+    const point = new TripEventPresenter(this.#tripEventListComponent, this.#updateTripEvent);
+    point.init(tripEvent, this.#offers, this.#destinations);
     this.#tripEventPresenter.set(tripEvent.id, point);
   };
 

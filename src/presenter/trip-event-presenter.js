@@ -15,21 +15,16 @@ export default class TripEventPresenter {
 
   #changeData = null;
 
-  constructor(
-    pointsContainerComponent,
-    offers,
-    destinations,
-    changeData,
-  ) {
+  constructor(pointsContainerComponent,changeData) {
     this.#pointsContainerComponent = pointsContainerComponent;
     this.#pointsContainer = this.#pointsContainerComponent.element;
-    this.#destinations = destinations;
-    this.#offers = offers ;
     this.#changeData = changeData;
   }
 
-  init(tripEvent) {
+  init(tripEvent, offers, destinations) {
     this.#tripEvent = tripEvent;
+    this.#offers = offers ?? this.#offers;
+    this.#destinations = destinations ?? this.#destinations;
 
     const prevPointComponent = this.#pointComponent;
     const prevFormComponent = this.#formComponent;
