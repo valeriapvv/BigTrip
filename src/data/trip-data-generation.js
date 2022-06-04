@@ -61,8 +61,8 @@ const generateDate = createNewDateChain();
 const generatePoint = (id) => {
   const destination = getRandomArrayElement(destinations);
   const type = getRandomArrayElement(TYPES);
-  const dateFrom = generateDate.from(getRandomInteger(60, 60*24));
-  const dateTo = generateDate.to(getRandomInteger(30, 60*4));
+  const dateFrom = generateDate.from(getRandomInteger(20, 60*24));
+  const dateTo = generateDate.to(getRandomInteger(20, 60*24));
 
   return ({
     'basePrice': getRandomInteger(10, 10**3),

@@ -69,12 +69,17 @@ export default class TripEventPresenter {
   #initForm = () => {
     this.#formComponent.setRollupButtonClickHandler(this.#replaceFormToPoint);
     this.#formComponent.setEscapeKeydownHandler(this.#replaceFormToPoint);
-    this.#formComponent.setSubmitHandler(this.#replaceFormToPoint);
+    this.#formComponent.setSubmitHandler(this.#formSubmitHandler);
 
     this.#formComponent.setDeleteButtonClickHandler(this.#deleteButtonClickHandler);
 
     this.#resetPoints();
     this.#replacePointToForm();
+  };
+
+  #formSubmitHandler = (newPointData) => {
+    this.#replaceFormToPoint();
+    this.#changeData(newPointData);
   };
 
   #replacePointToForm = () => {

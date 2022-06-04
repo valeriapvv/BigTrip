@@ -50,6 +50,8 @@ const findTypeOffers = (offerType, allOffers) => allOffers.find(({type}) => type
 const findSelectedOffers = (point, allOffers) => findTypeOffers(point.type, allOffers).filter(({id}) => point.offers.includes(id));
 
 // Работа с датами
+const formatDate = (date, dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ') => dayjs(date).format(dateFormat);
+
 const defaultStartDate = dayjs().add(getRandomInteger(-60*24*10, 60*24*5), 'minute');
 
 const createNewDateChain = (startDate = defaultStartDate) => {
@@ -59,31 +61,38 @@ const createNewDateChain = (startDate = defaultStartDate) => {
   return ({
     from(timeBetweenEvents) {
       if (dayjs(date).isSame(dayjs(startDate), 'minute')) {
-        return date;
+        return formatDate(date);
       }
 
       date = dayjs(date).add(timeBetweenEvents, 'minute');
 
-      return date;
+      return formatDate(date);
     },
     to(eventDuration) {
       date = dayjs(date).add(eventDuration, 'minute');
 
-      return date;
+      return formatDate(date);
     }
   });
 };
 
-const formatDate = (date, dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ') => dayjs(date).format(dateFormat);
-
 const getDateDifference = (date1, date2) => {
-  const difference = Math.abs(date1.diff(date2, 'minute'));
+  const difference = Math.abs(dayjs(date1).diff(dayjs(date2), 'minute'));
 
   const days = Math.floor(difference / 60 / 24);
   const hours = Math.floor(difference % (60*24) / 60);
   const minutes = difference % 60;
 
-  return `${days >= 1 ? `${days}D`: ''} ${hours >= 1 ? `${hours  }H` : ''} ${minutes < 10 ? '0' : ''}${minutes}M`;
+  const formatedDays = `${days >= 1 ? `${days < 10 ? '0' : ''}${days}D`: ''}`;
+  const formatedHours = `${hours >= 1
+    ? `${hours < 10 ? '0' : ''}${hours}H`
+    : days >= 1
+      ? '00H'
+      : ''}`;
+  const formatedMinutes = `${minutes < 10 ? '0' : ''}${minutes}M`;
+
+
+  return `${formatedDays} ${formatedHours} ${formatedMinutes}`;
 };
 
 const isFutureEvent = (event) => dayjs().isBefore(dayjs(event.dateFrom), 'minute');

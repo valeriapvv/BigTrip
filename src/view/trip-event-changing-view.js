@@ -105,7 +105,7 @@ const createTripEventChangingTemplate = (tripEvent, allOffers, destinations) => 
               <span class="visually-hidden">Price</span>
                       &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price"  max="2000" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -139,6 +139,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
   constructor(tripEvent, allOffers, destinations) {
     super();
+    this.#tripEvent = tripEvent;
     this._state = TripEventChangingView.parsePointToState(tripEvent);
     this.#destinations = destinations;
     this.#offers = allOffers;
@@ -152,7 +153,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
   static parsePointToState = (point) => ({...point});
 
-  static parseStateToPoint = (state) => ({...state});
+  // static parseStateToPoint = (state) => ({...state});
 
   _restoreHandlers = () => {
     this.#setFormInnerHandlers();
@@ -169,6 +170,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
   #setFormInnerHandlers = () => {
     this.#setDestinationChangeHandler();
     this.#setTypeChangeHandler();
+    this.#setPriceChangeHandler();
   };
 
   #setDestinationChangeHandler = () => {
@@ -183,13 +185,22 @@ export default class TripEventChangingView extends AbstractStatefulView {
   };
 
   #setTypeChangeHandler = () => {
-    const typeInputs = this.element.querySelectorAll('.event__type-item input');
+    const typeInputsContainer = this.element.querySelector('.event__type-group');
 
-    typeInputs.forEach((input) => input.addEventListener('change', this.#typeChangeHandler));
+    typeInputsContainer.addEventListener('change', this.#typeChangeHandler);
   };
 
   #typeChangeHandler = (evt) => {
     this.updateElement({type: evt.target.value, offers: []});
+  };
+
+  #setPriceChangeHandler = () => {
+    const priceInput = this.element.querySelector('input[name="event-price"]');
+    priceInput.addEventListener('change', this.#priceChangeHandler);
+  };
+
+  #priceChangeHandler = (evt) => {
+    this.updateElement({basePrice: evt.target.value});
   };
 
   setRollupButtonClickHandler = (onRollup) => {
@@ -239,8 +250,9 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
   #submitHandler = (evt) => {
     evt.preventDefault();
+    // this.#tripEvent = TripEventChangingView.parseStateToPoint(this._state)
 
-    this._callback.onSubmit();
+    this._callback.onSubmit(this._state);
     this.removeEventListeners();
   };
 
