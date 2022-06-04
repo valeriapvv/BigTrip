@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {TYPES} from '../data/constants.js';
 import {formatDate, findTypeOffers} from '../utils.js';
 
@@ -129,7 +129,7 @@ const createTripEventChangingTemplate = (tripEvent, allOffers, destinations) => 
 };
 
 
-export default class TripEventChangingView extends AbstractView {
+export default class TripEventChangingView extends AbstractStatefulView {
   #tripEvent = null;
   #destinations = null;
   #offers = null;
@@ -139,14 +139,58 @@ export default class TripEventChangingView extends AbstractView {
 
   constructor(tripEvent, allOffers, destinations) {
     super();
-    this.#tripEvent = tripEvent;
+    this._state = TripEventChangingView.parsePointToState(tripEvent);
     this.#destinations = destinations;
     this.#offers = allOffers;
+
+    this.#setFormInnerHandlers();
   }
 
   get template() {
-    return createTripEventChangingTemplate(this.#tripEvent, this.#offers, this.#destinations);
+    return createTripEventChangingTemplate(this._state, this.#offers, this.#destinations);
   }
+
+  static parsePointToState = (point) => ({...point});
+
+  static parseStateToPoint = (state) => ({...state});
+
+  _restoreHandlers = () => {
+    this.#setFormInnerHandlers();
+    this.#setFormCloseHandlers();
+  };
+
+  #setFormCloseHandlers = () => {
+    this.setRollupButtonClickHandler(this._callback.onRollup);
+    this.setEscapeKeydownHandler(this._callback.onKeydown);
+    this.setSubmitHandler(this._callback.onSubmit);
+    this.setDeleteButtonClickHandler(this._callback.onDelete);
+  };
+
+  #setFormInnerHandlers = () => {
+    this.#setDestinationChangeHandler();
+    this.#setTypeChangeHandler();
+  };
+
+  #setDestinationChangeHandler = () => {
+    const destinationInput = this.element.querySelector('input[name="event-destination"]');
+
+    destinationInput.addEventListener('change', this.#destinationChangeHandler);
+  };
+
+  #destinationChangeHandler = (evt) => {
+    const newDestination = this.#destinations.find((it) => it.name === evt.target.value);
+    this.updateElement({destination: newDestination});
+  };
+
+  #setTypeChangeHandler = () => {
+    const typeInputs = this.element.querySelectorAll('.event__type-item input');
+
+    typeInputs.forEach((input) => input.addEventListener('change', this.#typeChangeHandler));
+  };
+
+  #typeChangeHandler = (evt) => {
+    this.updateElement({type: evt.target.value, offers: []});
+  };
 
   setRollupButtonClickHandler = (onRollup) => {
     this._callback.onRollup = onRollup;
