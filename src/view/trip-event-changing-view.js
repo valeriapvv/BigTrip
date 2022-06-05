@@ -144,11 +144,13 @@ export default class TripEventChangingView extends AbstractStatefulView {
   #priceInput = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #dateFromInput = null;
+  #dateToInput = null;
 
   constructor(tripEvent, allOffers, destinations) {
     super();
     this.#tripEvent = tripEvent;
-    this._state = {...tripEvent}
+    this._state = {...tripEvent};
     this.#destinations = destinations;
     this.#offers = allOffers;
 
@@ -190,22 +192,23 @@ export default class TripEventChangingView extends AbstractStatefulView {
   };
 
   #setFormInnerHandlers = () => {
-    this.#setDatepickers();
     this.#setDestinationChangeHandler();
     this.#setTypeChangeHandler();
     this.#setOfferChangeHandler();
     this.#setPriceChangeHandler();
+    this.#setDatepickers();
     // console.log("внутренние обработчики");
   };
 
   #setDatepickers = () => {
     this.#datepickerFrom = flatpickr(
       this.element.querySelector('input[name="event-start-time"]'),
-      { 
+      {
         enableTime: true,
         defaultDate: this._state.dateFrom,
         altInput: true,
-        altFormat: "d/m/y H:i",
+        altFormat: 'd/m/y H:i',
+        onClose: this.#dateFromChangeHandler,
       },
     );
 
@@ -214,10 +217,19 @@ export default class TripEventChangingView extends AbstractStatefulView {
       {
         enableTime: true,
         defaultDate: this._state.dateTo,
-        altFormat: "d/m/y H:i",
+        altFormat: 'd/m/y H:i',
         altInput: true,
+        onClose: this.#dateToChangeHandler,
       },
     );
+  };
+
+  #dateFromChangeHandler = ([newDate]) => {
+    this.updateElement({dateFrom: formatDate(newDate)});
+  };
+
+  #dateToChangeHandler = ([newDate]) => {
+    this.updateElement({dateTo: formatDate(newDate)});
   };
 
   #setDestinationChangeHandler = () => {
@@ -303,7 +315,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
     this.#removeInnerEventListeners();
     this.removeEventListeners();
     this.updateElement(point);
-  }
+  };
 
   removeEventListeners = () => {
     this.#rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
@@ -319,7 +331,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
     this.#offersContainer?.removeEventListener('change', this.#offerChangeHandler);
     this.#priceInput.removeEventListener('change', this.#priceChangeHandler);
     // console.log("внутренние: удалились")
-  }
+  };
 
   #rollupButtonClickHandler = () => {
     this.reset(this.#tripEvent);

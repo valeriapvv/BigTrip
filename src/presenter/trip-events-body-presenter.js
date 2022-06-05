@@ -66,7 +66,7 @@ export default class TripEventsBodyPresenter {
     this.#renderTripEvents(this.#tripEvents);
   };
 
-  #sortTripEvents = (sortType, tripEvents) => {
+  #sortTripEvents = (sortType) => {
     this.#currentSortType = sortType;
 
     switch (sortType) {
@@ -80,7 +80,6 @@ export default class TripEventsBodyPresenter {
         this.#tripEvents.sort(sortByDay);
     }
   };
-
 
 
   #renderTripEvents = (tripEvents) => {
