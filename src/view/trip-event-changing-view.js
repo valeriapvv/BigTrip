@@ -144,8 +144,6 @@ export default class TripEventChangingView extends AbstractStatefulView {
   #priceInput = null;
   #datepickerFrom = null;
   #datepickerTo = null;
-  #dateFromInput = null;
-  #dateToInput = null;
 
   constructor(tripEvent, allOffers, destinations) {
     super();
@@ -263,7 +261,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
   #offerChangeHandler = (evt) => {
     const inputId = evt.target.id;
     const offerId = parseInt(inputId[inputId.length - 1], 10);
-    const checkedOffers = this._state.offers;
+    const checkedOffers = [...this._state.offers];
 
     if (evt.target.checked) {
       checkedOffers.push(offerId);
