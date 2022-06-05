@@ -72,6 +72,7 @@ export default class TripEventPresenter {
     this.#formComponent.setSubmitHandler(this.#formSubmitHandler);
 
     this.#formComponent.setDeleteButtonClickHandler(this.#deleteButtonClickHandler);
+    // console.log("Обработчики закрытия")
 
     this.#resetPoints();
     this.#replacePointToForm();
@@ -105,6 +106,7 @@ export default class TripEventPresenter {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#formComponent.reset(this.#tripEvent);
       this.#formComponent.removeEventListeners();
       this.#replaceFormToPoint();
     }

@@ -14,6 +14,10 @@ export default class TripEventsModel {
     return this.#tripEvents;
   }
 
+  // set tripEvents(newTripEvents) {
+  //   this.#tripEvents = newTripEvents;
+  // }
+
   get destinations() {
     return this.#destinations;
   }

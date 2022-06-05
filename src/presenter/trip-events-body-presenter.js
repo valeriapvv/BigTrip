@@ -62,10 +62,11 @@ export default class TripEventsBodyPresenter {
     this.#sortTripEvents(sortType);
 
     this.#clearTripEventList();
+
     this.#renderTripEvents(this.#tripEvents);
   };
 
-  #sortTripEvents = (sortType) => {
+  #sortTripEvents = (sortType, tripEvents) => {
     this.#currentSortType = sortType;
 
     switch (sortType) {
@@ -79,6 +80,8 @@ export default class TripEventsBodyPresenter {
         this.#tripEvents.sort(sortByDay);
     }
   };
+
+
 
   #renderTripEvents = (tripEvents) => {
     tripEvents.forEach((it) => this.#renderTripEvent(it));
@@ -94,6 +97,7 @@ export default class TripEventsBodyPresenter {
     this.#tripEvents = updateItem(update, this.#tripEvents);
     // this.#tripEventsToSort = this.#tripEvents;
     this.#tripEventPresenter.get(update.id).init(update);
+    // console.log(this.#tripEvents.find(it => update.id === it.id))
   };
 
   #resetTripEvents = () => {

@@ -1,6 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {TYPES} from '../data/constants.js';
 import {formatDate, findTypeOffers} from '../utils.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 const createEventTypeSelectTemplate = (eventType) =>  TYPES.map((it) => (
   `<div class="event__type-item">
@@ -84,7 +86,7 @@ const createTripEventChangingTemplate = (tripEvent, allOffers, destinations) => 
             </label>
 
             <input class="event__input  event__input--destination" id="event-destination-1" 
-            type="text" name="event-destination" value="${name}" list="destination-list-1">
+            type="text" name="event-destination" value="${name}" list="destination-list-1" required>
 
             <datalist id="destination-list-1">
               ${pointNames.map((it) => `<option value="${it}"></option>`).join('')}
@@ -136,11 +138,17 @@ export default class TripEventChangingView extends AbstractStatefulView {
   #rollupButton = null;
   #form = null;
   #deleteButton = null;
+  #destinationInput = null;
+  #typeInputsContainer = null;
+  #offersContainer = null;
+  #priceInput = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor(tripEvent, allOffers, destinations) {
     super();
     this.#tripEvent = tripEvent;
-    this._state = TripEventChangingView.parsePointToState(tripEvent);
+    this._state = {...tripEvent}
     this.#destinations = destinations;
     this.#offers = allOffers;
 
@@ -151,8 +159,21 @@ export default class TripEventChangingView extends AbstractStatefulView {
     return createTripEventChangingTemplate(this._state, this.#offers, this.#destinations);
   }
 
-  static parsePointToState = (point) => ({...point});
+  removeElement () {
+    super.removeElement();
 
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
+  // static parsePointToState = (point) => ({...point});
   // static parseStateToPoint = (state) => ({...state});
 
   _restoreHandlers = () => {
@@ -165,41 +186,91 @@ export default class TripEventChangingView extends AbstractStatefulView {
     this.setEscapeKeydownHandler(this._callback.onKeydown);
     this.setSubmitHandler(this._callback.onSubmit);
     this.setDeleteButtonClickHandler(this._callback.onDelete);
+    // console.log("обработчики закрытия");
   };
 
   #setFormInnerHandlers = () => {
+    this.#setDatepickers();
     this.#setDestinationChangeHandler();
     this.#setTypeChangeHandler();
+    this.#setOfferChangeHandler();
     this.#setPriceChangeHandler();
+    // console.log("внутренние обработчики");
+  };
+
+  #setDatepickers = () => {
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('input[name="event-start-time"]'),
+      { 
+        enableTime: true,
+        defaultDate: this._state.dateFrom,
+        altInput: true,
+        altFormat: "d/m/y H:i",
+      },
+    );
+
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('input[name="event-end-time"]'),
+      {
+        enableTime: true,
+        defaultDate: this._state.dateTo,
+        altFormat: "d/m/y H:i",
+        altInput: true,
+      },
+    );
   };
 
   #setDestinationChangeHandler = () => {
-    const destinationInput = this.element.querySelector('input[name="event-destination"]');
-
-    destinationInput.addEventListener('change', this.#destinationChangeHandler);
+    this.#destinationInput = this.element.querySelector('input[name="event-destination"]');
+    this.#destinationInput.addEventListener('change', this.#destinationChangeHandler);
   };
 
   #destinationChangeHandler = (evt) => {
     const newDestination = this.#destinations.find((it) => it.name === evt.target.value);
+    this.#removeInnerEventListeners();
+    this.removeEventListeners();
     this.updateElement({destination: newDestination});
   };
 
   #setTypeChangeHandler = () => {
-    const typeInputsContainer = this.element.querySelector('.event__type-group');
-
-    typeInputsContainer.addEventListener('change', this.#typeChangeHandler);
+    this.#typeInputsContainer = this.element.querySelector('.event__type-group');
+    this.#typeInputsContainer.addEventListener('change', this.#typeChangeHandler);
   };
 
   #typeChangeHandler = (evt) => {
+    this.#removeInnerEventListeners();
+    this.removeEventListeners();
     this.updateElement({type: evt.target.value, offers: []});
   };
 
+  #setOfferChangeHandler = () => {
+    this.#offersContainer = this.element.querySelector('.event__available-offers');
+    this.#offersContainer?.addEventListener('change', this.#offerChangeHandler);
+  };
+
+  #offerChangeHandler = (evt) => {
+    const inputId = evt.target.id;
+    const offerId = parseInt(inputId[inputId.length - 1], 10);
+    const checkedOffers = this._state.offers;
+
+    if (evt.target.checked) {
+      checkedOffers.push(offerId);
+    } else {
+      const index = checkedOffers.indexOf(offerId);
+      checkedOffers.splice(index, 1);
+    }
+
+    this.updateElement({offers: checkedOffers});
+  };
+
   #setPriceChangeHandler = () => {
-    const priceInput = this.element.querySelector('input[name="event-price"]');
-    priceInput.addEventListener('change', this.#priceChangeHandler);
+    this.#priceInput = this.element.querySelector('input[name="event-price"]');
+    this.#priceInput.addEventListener('change', this.#priceChangeHandler);
   };
 
   #priceChangeHandler = (evt) => {
+    this.#removeInnerEventListeners();
+    this.removeEventListeners();
     this.updateElement({basePrice: evt.target.value});
   };
 
@@ -228,21 +299,37 @@ export default class TripEventChangingView extends AbstractStatefulView {
     this.#deleteButton.addEventListener('click', this.#deleteButtonClickHandler);
   };
 
+  reset = (point) => {
+    this.#removeInnerEventListeners();
+    this.removeEventListeners();
+    this.updateElement(point);
+  }
+
   removeEventListeners = () => {
     this.#rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
     this.#deleteButton.removeEventListener('click', this.#deleteButtonClickHandler);
     document.removeEventListener('keydown', this.#onEscapeKeydown);
     this.#form.removeEventListener('submit', this.#submitHandler);
-    // console.log("форма: удалились");
+    // console.log("закрытие: удалились");
   };
 
+  #removeInnerEventListeners = () => {
+    this.#destinationInput.removeEventListener('change', this.#destinationChangeHandler);
+    this.#typeInputsContainer.removeEventListener('change', this.#typeChangeHandler);
+    this.#offersContainer?.removeEventListener('change', this.#offerChangeHandler);
+    this.#priceInput.removeEventListener('change', this.#priceChangeHandler);
+    // console.log("внутренние: удалились")
+  }
+
   #rollupButtonClickHandler = () => {
+    this.reset(this.#tripEvent);
     this._callback.onRollup();
     this.removeEventListeners();
   };
 
   #onEscapeKeydown = (evt) => {
     if (evt.code === 'Escape') {
+      this.reset(this.#tripEvent);
       this._callback.onKeydown();
       this.removeEventListeners();
     }
