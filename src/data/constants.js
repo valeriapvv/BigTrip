@@ -32,4 +32,16 @@ const SortType = {
   PRICE: 'price',
 };
 
-export {TYPES, POINTS, FilterType, SortType};
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const UserAction = {
+  UPDATE: 'UPDATE',
+  ADD: 'ADD',
+  DELETE: 'DELETE',
+};
+
+export {TYPES, POINTS, FilterType, SortType, UpdateType, UserAction};

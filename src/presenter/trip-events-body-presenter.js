@@ -1,55 +1,65 @@
 import TripSortView from '../view/trip-sort-view.js';
 import TripEventListView from '../view/trip-event-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
-import {render} from '../framework/render.js';
-import {updateItem, sortByDay, sortByTime, sortByPrice} from '../utils.js';
-import {SortType} from '../data/constants.js';
+import {render, remove} from '../framework/render.js';
+import {sortByDay, sortByTime, sortByPrice} from '../utils.js';
+import {SortType, UpdateType, UserAction} from '../data/constants.js';
 
 
 export default class TripEventsBodyPresenter {
   #tripEventsBodyContainer = null;
   #tripEventListComponent = new TripEventListView();
   #tripEventsModel = null;
-  #tripEvents = null;
+  // #tripEvents = null;
   #destinations = null;
   #offers = null;
   #tripEventPresenter = new Map ();
-  #tripSortComponent = new TripSortView();
+
   #currentSortType = SortType.DAY;
-  // #tripEventsToSort = null;
+  #tripSortComponent = null;
 
   constructor(tripEventsBodyContainer, tripEventsModel) {
     this.#tripEventsBodyContainer = tripEventsBodyContainer;
     this.#tripEventsModel = tripEventsModel;
+
+    this.#tripEventsModel.addObserver(this.#handleModelEvent);
   }
 
   get tripEvents() {
-    return this.#tripEvents;
+    const sortType = this.#currentSortType;
+    switch (sortType) {
+      case SortType.TIME:
+        return this.#tripEventsModel.tripEvents.sort(sortByTime);
+      case SortType.PRICE:
+        return this.#tripEventsModel.tripEvents.sort(sortByPrice);
+      case SortType.DAY:
+        return this.#tripEventsModel.tripEvents.sort(sortByDay);
+    }
+
+    throw new Error('Ошибка в текущем типе сортировки');
   }
 
   set tripEvents(filteredTripEvents) {
-    this.#tripEvents = filteredTripEvents;
+    this.tripEvents = filteredTripEvents;
   }
 
   init = () => {
+    this.#destinations = this.#tripEventsModel.destinations;
+    this.#offers = this.#tripEventsModel.offers;
 
-    if (this.#tripEvents === null) {
-      this.#tripEvents = this.#tripEventsModel.tripEvents;
-      // this.#tripEventsToSort = this.#tripEvents;
-      this.#destinations = this.#tripEventsModel.destinations;
-      this.#offers = this.#tripEventsModel.offers;
+    this.#renderItinerary();
+  };
 
-      this.#renderSort();
+  #renderItinerary = () => {
+    this.#renderSort();
 
-      render(this.#tripEventListComponent, this.#tripEventsBodyContainer);
-    } else {
-      this.#clearTripEventList();
-    }
+    render(this.#tripEventListComponent, this.#tripEventsBodyContainer);
 
-    this.#renderTripEvents(this.#tripEvents);
+    this.#renderTripEvents(this.tripEvents);
   };
 
   #renderSort = () => {
+    this.#tripSortComponent = new TripSortView(this.#currentSortType);
     render(this.#tripSortComponent, this.#tripEventsBodyContainer);
     this.#tripSortComponent.setSortChangeHandler(this.#sortChangeHandler);
   };
@@ -59,51 +69,76 @@ export default class TripEventsBodyPresenter {
       return;
     }
 
-    this.#sortTripEvents(sortType);
-
-    this.#clearTripEventList();
-
-    this.#renderTripEvents(this.#tripEvents);
-  };
-
-  #sortTripEvents = (sortType) => {
     this.#currentSortType = sortType;
 
-    switch (sortType) {
-      case SortType.TIME:
-        this.#tripEvents.sort(sortByTime);
-        return;
-      case SortType.PRICE:
-        this.#tripEvents.sort(sortByPrice);
-        return;
-      default:
-        this.#tripEvents.sort(sortByDay);
-    }
-  };
+    this.#clearTripEventList();
+    // console.log(this.#currentSortType, SortType.PRICE);
+    // console.log(typeof this.#currentSortType, typeof SortType.PRICE);
+    // console.log(this.#currentSortType === SortType.PRICE);
 
+    this.#renderTripEvents(this.tripEvents);
+  };
 
   #renderTripEvents = (tripEvents) => {
     tripEvents.forEach((it) => this.#renderTripEvent(it));
   };
 
   #renderTripEvent = (tripEvent) => {
-    const point = new TripEventPresenter(this.#tripEventListComponent, this.#updateTripEvent, this.#resetTripEvents);
+    const point = new TripEventPresenter(this.#tripEventListComponent, this.#handleViewAction, this.#resetTripEvents);
     point.init(tripEvent, this.#offers, this.#destinations);
     this.#tripEventPresenter.set(tripEvent.id, point);
   };
 
-  #updateTripEvent = (update) => {
-    this.#tripEvents = updateItem(update, this.#tripEvents);
-    // this.#tripEventsToSort = this.#tripEvents;
-    this.#tripEventPresenter.get(update.id).init(update);
-    // console.log(this.#tripEvents.find(it => update.id === it.id))
+  #handleViewAction = (actionType, updateType, update) => {
+
+    switch (actionType) {
+      case UserAction.UPDATE:
+        this.#tripEventsModel.updateTripEvent(updateType, update);
+        break;
+      case UserAction.ADD:
+        this.#tripEventsModel.addTripEvent(updateType, update);
+        break;
+      case UserAction.DELETE:
+        this.#tripEventsModel.deleteTripEvent(updateType, update);
+        break;
+    }
+
+    // this.tripEvents = updateItem(update, this.tripEvents);
+    // this.#tripEventPresenter.get(update.id).init(update);
+    // console.log(this.tripEvents.find(it => update.id === it.id))
+  };
+
+  #handleModelEvent = (updateType, update) => {
+
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#tripEventPresenter.get(update.id).init(update);
+        break;
+      case UpdateType.MINOR:
+        this.#clearTripEventList({resetSortType: true});
+        this.#renderItinerary();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearTripEventList({resetSortType: true, resetFilter: true});
+        this.#renderItinerary();
+        break;
+    }
   };
 
   #resetTripEvents = () => {
     this.#tripEventPresenter.forEach((point) => point.resetView());
   };
 
-  #clearTripEventList = () => {
+  #clearTripEventList = ({resetSortType = false, resetFilter = false} = {}) => {
+    if (resetSortType) {
+      this.#currentSortType = SortType.DAY;
+      remove(this.#tripSortComponent);
+    }
+
+    if (resetFilter) {
+      // перерисовать фильтры
+    }
+
     this.#tripEventPresenter.forEach((point) => point.destroy());
     this.#tripEventPresenter.clear();
   };

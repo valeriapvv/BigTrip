@@ -112,7 +112,7 @@ const findEndDate = (points) => points.reduce((endDate, point) => {
 }, dayjs(points[0]?.dateTo));
 
 
-//
+//удалить
 const updateItem = (update, items) => {
   const index = items.findIndex((item) => item.id === update.id);
 

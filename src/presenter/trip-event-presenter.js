@@ -2,6 +2,7 @@ import TripEventView from '../view/trip-event-view.js';
 import TripEventChangingView from '../view/trip-event-changing-view.js';
 import EmptyListMessagePresenter from './empty-list-message-presenter.js';
 import {render, replace, remove} from '../framework/render.js';
+import {UpdateType, UserAction} from '../data/constants.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -63,7 +64,11 @@ export default class TripEventPresenter {
   #favoriteButtonClickHandler = () => {
     const isFavorite = this.#tripEvent.isFavorite;
 
-    this.#changeData({...this.#tripEvent, isFavorite: !isFavorite});
+    this.#changeData(
+      UserAction.UPDATE,
+      UpdateType.PATCH,
+      {...this.#tripEvent, isFavorite: !isFavorite},
+    );
   };
 
   #initForm = () => {
@@ -79,8 +84,12 @@ export default class TripEventPresenter {
   };
 
   #formSubmitHandler = (newPointData) => {
+    this.#changeData(
+      UserAction.UPDATE,
+      UpdateType.MINOR,
+      newPointData,
+    );
     this.#replaceFormToPoint();
-    this.#changeData(newPointData);
   };
 
   #replacePointToForm = () => {
