@@ -43,7 +43,7 @@ export default class TripFiltersPresenter {
   };
 
   #handleModelEvent = () => {
-    this.init()
+    this.init();
   };
 
   #filtersChangeHandler = (filterType) => {

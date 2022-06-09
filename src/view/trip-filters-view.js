@@ -1,5 +1,4 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {filter} from '../filter.js';
 
 const createTripFilterItemTemplate = (tripFilter, currentFilterType) => {
   const {name, count} = tripFilter;

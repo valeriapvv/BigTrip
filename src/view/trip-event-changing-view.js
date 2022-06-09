@@ -161,11 +161,11 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
   removeElement () {
     if (this.mode === PointMode.EDITING) {
-      console.log('REMOVE')
+      // console.log('REMOVE');
       this.#removeEventListeners();
       this.#removeInnerEventListeners();
     }
-    
+
     super.removeElement();
   }
 
@@ -174,7 +174,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     if (this.mode === PointMode.EDITING) {
-      console.log('RESTORE')
+      // console.log('RESTORE');
       this.setFormInnerHandlers();
       this.#setFormCloseHandlers();
     }
@@ -217,7 +217,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
         onClose: this.#dateToChangeHandler,
       },
     );
-    console.log('datepickers')
+    // console.log('datepickers');
   };
 
   #dateFromChangeHandler = ([newDate]) => {
@@ -307,7 +307,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
     this.#removeEventListeners();
 
     this.updateElement(point);
-    console.log('REMOVE')
+    // console.log('REMOVE');
   };
 
   #removeEventListeners = () => {
@@ -331,13 +331,13 @@ export default class TripEventChangingView extends AbstractStatefulView {
     if (this.#datepickerTo) {
       this.#datepickerTo.destroy();
       this.#datepickerTo = null;
-      console.log('destroy datepickers')
+      // console.log('destroy datepickers');
     }
   };
 
   #rollupButtonClickHandler = () => {
     this.reset(this.#tripEvent);
-   
+
     this._callback.onRollup();
   };
 
@@ -354,7 +354,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
     this.#removeInnerEventListeners();
     this.#removeEventListeners();
-    console.log('REMOVE');
+    // console.log('REMOVE');
     this._callback.onSubmit(this._state);
   };
 

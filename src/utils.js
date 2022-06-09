@@ -151,7 +151,7 @@ const sortByPrice = (pointA, pointB) => {
   }
 
   return sortValue;
-}; 
+};
 
 
 export {

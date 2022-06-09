@@ -118,7 +118,7 @@ export default class TripEventPresenter {
     this.#mode = PointMode.DEFAULT;
     this.#formComponent.mode = PointMode.DEFAULT;
     replace(this.#pointComponent, this.#formComponent);
-    
+
   };
 
   #deleteButtonClickHandler = () => {
