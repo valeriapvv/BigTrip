@@ -1,6 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {TYPES} from '../data/constants.js';
 import {formatDate, findTypeOffers} from '../utils.js';
+import {PointMode} from '../data/constants.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -144,6 +145,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
   #priceInput = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  mode = PointMode.DEFAULT;
 
   constructor(tripEvent, allOffers, destinations) {
     super();
@@ -151,8 +153,6 @@ export default class TripEventChangingView extends AbstractStatefulView {
     this._state = {...tripEvent};
     this.#destinations = destinations;
     this.#offers = allOffers;
-
-    this.#setFormInnerHandlers();
   }
 
   get template() {
@@ -160,25 +160,24 @@ export default class TripEventChangingView extends AbstractStatefulView {
   }
 
   removeElement () {
+    if (this.mode === PointMode.EDITING) {
+      console.log('REMOVE')
+      this.#removeEventListeners();
+      this.#removeInnerEventListeners();
+    }
+    
     super.removeElement();
-
-    if (this.#datepickerFrom) {
-      this.#datepickerFrom.destroy();
-      this.#datepickerFrom = null;
-    }
-
-    if (this.#datepickerTo) {
-      this.#datepickerTo.destroy();
-      this.#datepickerTo = null;
-    }
   }
 
   // static parsePointToState = (point) => ({...point});
   // static parseStateToPoint = (state) => ({...state});
 
   _restoreHandlers = () => {
-    this.#setFormInnerHandlers();
-    this.#setFormCloseHandlers();
+    if (this.mode === PointMode.EDITING) {
+      console.log('RESTORE')
+      this.setFormInnerHandlers();
+      this.#setFormCloseHandlers();
+    }
   };
 
   #setFormCloseHandlers = () => {
@@ -186,16 +185,14 @@ export default class TripEventChangingView extends AbstractStatefulView {
     this.setEscapeKeydownHandler(this._callback.onKeydown);
     this.setSubmitHandler(this._callback.onSubmit);
     this.setDeleteButtonClickHandler(this._callback.onDelete);
-    // console.log("обработчики закрытия");
   };
 
-  #setFormInnerHandlers = () => {
+  setFormInnerHandlers = () => {
     this.#setDestinationChangeHandler();
     this.#setTypeChangeHandler();
     this.#setOfferChangeHandler();
     this.#setPriceChangeHandler();
     this.#setDatepickers();
-    // console.log("внутренние обработчики");
   };
 
   #setDatepickers = () => {
@@ -220,6 +217,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
         onClose: this.#dateToChangeHandler,
       },
     );
+    console.log('datepickers')
   };
 
   #dateFromChangeHandler = ([newDate]) => {
@@ -237,8 +235,6 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
   #destinationChangeHandler = (evt) => {
     const newDestination = this.#destinations.find((it) => it.name === evt.target.value);
-    this.#removeInnerEventListeners();
-    this.removeEventListeners();
     this.updateElement({destination: newDestination});
   };
 
@@ -248,8 +244,6 @@ export default class TripEventChangingView extends AbstractStatefulView {
   };
 
   #typeChangeHandler = (evt) => {
-    this.#removeInnerEventListeners();
-    this.removeEventListeners();
     this.updateElement({type: evt.target.value, offers: []});
   };
 
@@ -279,8 +273,6 @@ export default class TripEventChangingView extends AbstractStatefulView {
   };
 
   #priceChangeHandler = (evt) => {
-    this.#removeInnerEventListeners();
-    this.removeEventListeners();
     this.updateElement({basePrice: evt.target.value});
   };
 
@@ -310,17 +302,19 @@ export default class TripEventChangingView extends AbstractStatefulView {
   };
 
   reset = (point) => {
+    this.mode = PointMode.DEFAULT;
     this.#removeInnerEventListeners();
-    this.removeEventListeners();
+    this.#removeEventListeners();
+
     this.updateElement(point);
+    console.log('REMOVE')
   };
 
-  removeEventListeners = () => {
+  #removeEventListeners = () => {
     this.#rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
     this.#deleteButton.removeEventListener('click', this.#deleteButtonClickHandler);
     document.removeEventListener('keydown', this.#onEscapeKeydown);
     this.#form.removeEventListener('submit', this.#submitHandler);
-    // console.log("закрытие: удалились");
   };
 
   #removeInnerEventListeners = () => {
@@ -328,34 +322,43 @@ export default class TripEventChangingView extends AbstractStatefulView {
     this.#typeInputsContainer.removeEventListener('change', this.#typeChangeHandler);
     this.#offersContainer?.removeEventListener('change', this.#offerChangeHandler);
     this.#priceInput.removeEventListener('change', this.#priceChangeHandler);
-    // console.log("внутренние: удалились")
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+      console.log('destroy datepickers')
+    }
   };
 
   #rollupButtonClickHandler = () => {
     this.reset(this.#tripEvent);
+   
     this._callback.onRollup();
-    this.removeEventListeners();
   };
 
   #onEscapeKeydown = (evt) => {
     if (evt.code === 'Escape') {
       this.reset(this.#tripEvent);
+
       this._callback.onKeydown();
-      this.removeEventListeners();
     }
   };
 
   #submitHandler = (evt) => {
     evt.preventDefault();
-    // this.#tripEvent = TripEventChangingView.parseStateToPoint(this._state)
 
+    this.#removeInnerEventListeners();
+    this.#removeEventListeners();
+    console.log('REMOVE');
     this._callback.onSubmit(this._state);
-    this.removeEventListeners();
   };
 
   #deleteButtonClickHandler = () => {
-    this.removeEventListeners();
-
     this._callback.onDelete();
   };
 }

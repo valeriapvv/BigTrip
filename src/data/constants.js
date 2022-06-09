@@ -20,6 +20,11 @@ const POINTS = [
   'Mosfellsbær',
 ];
 
+const PointMode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -44,4 +49,4 @@ const UserAction = {
   DELETE: 'DELETE',
 };
 
-export {TYPES, POINTS, FilterType, SortType, UpdateType, UserAction};
+export {TYPES, POINTS, PointMode, FilterType, SortType, UpdateType, UserAction};

@@ -7,11 +7,11 @@ const filter = {
   [FilterType.PAST]: (points) => points.filter((point) => isPastEvent(point)),
 };
 
-const createFilters = (points) => Object.entries(filter)
+const getFilters = (points) => Object.entries(filter)
   .map(([filterName, filterPoints]) => ({
     name: filterName,
     count: filterPoints(points).length,
   }
   ));
 
-export {filter, createFilters};
+export {filter, getFilters};

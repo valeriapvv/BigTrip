@@ -4,12 +4,14 @@ import TripEventPresenter from './trip-event-presenter.js';
 import {render, remove} from '../framework/render.js';
 import {sortByDay, sortByTime, sortByPrice} from '../utils.js';
 import {SortType, UpdateType, UserAction} from '../data/constants.js';
+import {filter} from '../filter.js';
 
 
 export default class TripEventsBodyPresenter {
   #tripEventsBodyContainer = null;
   #tripEventListComponent = new TripEventListView();
   #tripEventsModel = null;
+  #tripFiltersModel = null;
   // #tripEvents = null;
   #destinations = null;
   #offers = null;
@@ -18,29 +20,30 @@ export default class TripEventsBodyPresenter {
   #currentSortType = SortType.DAY;
   #tripSortComponent = null;
 
-  constructor(tripEventsBodyContainer, tripEventsModel) {
+  constructor(tripEventsBodyContainer, tripEventsModel, tripFiltersModel) {
     this.#tripEventsBodyContainer = tripEventsBodyContainer;
     this.#tripEventsModel = tripEventsModel;
+    this.#tripFiltersModel = tripFiltersModel;
 
     this.#tripEventsModel.addObserver(this.#handleModelEvent);
+    this.#tripFiltersModel.addObserver(this.#handleModelEvent);
   }
 
   get tripEvents() {
-    const sortType = this.#currentSortType;
-    switch (sortType) {
+    const filterType = this.#tripFiltersModel.filter;
+    const tripEvents = this.#tripEventsModel.tripEvents;
+    const filteredTasks = filter[filterType](tripEvents);
+
+    switch (this.#currentSortType) {
       case SortType.TIME:
-        return this.#tripEventsModel.tripEvents.sort(sortByTime);
+        return filteredTasks.sort(sortByTime);
       case SortType.PRICE:
-        return this.#tripEventsModel.tripEvents.sort(sortByPrice);
+        return filteredTasks.sort(sortByPrice);
       case SortType.DAY:
-        return this.#tripEventsModel.tripEvents.sort(sortByDay);
+        return filteredTasks.sort(sortByDay);
     }
 
     throw new Error('Ошибка в текущем типе сортировки');
-  }
-
-  set tripEvents(filteredTripEvents) {
-    this.tripEvents = filteredTripEvents;
   }
 
   init = () => {
@@ -51,7 +54,10 @@ export default class TripEventsBodyPresenter {
   };
 
   #renderItinerary = () => {
-    this.#renderSort();
+    if (this.#tripSortComponent === null) {
+      this.#renderSort();
+      // console.log('create Sort');
+    }
 
     render(this.#tripEventListComponent, this.#tripEventsBodyContainer);
 
@@ -72,9 +78,6 @@ export default class TripEventsBodyPresenter {
     this.#currentSortType = sortType;
 
     this.#clearTripEventList();
-    // console.log(this.#currentSortType, SortType.PRICE);
-    // console.log(typeof this.#currentSortType, typeof SortType.PRICE);
-    // console.log(this.#currentSortType === SortType.PRICE);
 
     this.#renderTripEvents(this.tripEvents);
   };
@@ -84,8 +87,17 @@ export default class TripEventsBodyPresenter {
   };
 
   #renderTripEvent = (tripEvent) => {
-    const point = new TripEventPresenter(this.#tripEventListComponent, this.#handleViewAction, this.#resetTripEvents);
-    point.init(tripEvent, this.#offers, this.#destinations);
+    const point = new TripEventPresenter(
+      this.#tripEventListComponent,
+      this.#handleViewAction,
+      this.#resetTripEvents
+    );
+    point.init(
+      tripEvent,
+      this.#offers,
+      this.#destinations,
+      this.#currentSortType
+    );
     this.#tripEventPresenter.set(tripEvent.id, point);
   };
 
@@ -102,7 +114,6 @@ export default class TripEventsBodyPresenter {
         this.#tripEventsModel.deleteTripEvent(updateType, update);
         break;
     }
-
     // this.tripEvents = updateItem(update, this.tripEvents);
     // this.#tripEventPresenter.get(update.id).init(update);
     // console.log(this.tripEvents.find(it => update.id === it.id))
@@ -115,11 +126,11 @@ export default class TripEventsBodyPresenter {
         this.#tripEventPresenter.get(update.id).init(update);
         break;
       case UpdateType.MINOR:
-        this.#clearTripEventList({resetSortType: true});
+        this.#clearTripEventList();
         this.#renderItinerary();
         break;
       case UpdateType.MAJOR:
-        this.#clearTripEventList({resetSortType: true, resetFilter: true});
+        this.#clearTripEventList({resetSortType: true});
         this.#renderItinerary();
         break;
     }
@@ -129,14 +140,12 @@ export default class TripEventsBodyPresenter {
     this.#tripEventPresenter.forEach((point) => point.resetView());
   };
 
-  #clearTripEventList = ({resetSortType = false, resetFilter = false} = {}) => {
-    if (resetSortType) {
+  #clearTripEventList = ({resetSortType = false} = {}) => {
+    if (resetSortType && this.#currentSortType !== SortType.DAY) {
       this.#currentSortType = SortType.DAY;
       remove(this.#tripSortComponent);
-    }
-
-    if (resetFilter) {
-      // перерисовать фильтры
+      this.#tripSortComponent = null;
+      // console.log('delete Sort');
     }
 
     this.#tripEventPresenter.forEach((point) => point.destroy());

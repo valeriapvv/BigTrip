@@ -2,12 +2,8 @@ import TripEventView from '../view/trip-event-view.js';
 import TripEventChangingView from '../view/trip-event-changing-view.js';
 import EmptyListMessagePresenter from './empty-list-message-presenter.js';
 import {render, replace, remove} from '../framework/render.js';
-import {UpdateType, UserAction} from '../data/constants.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import {UpdateType, UserAction, SortType, PointMode} from '../data/constants.js';
+import {isDatesEqual, getEventDuration} from '../utils.js';
 
 export default class TripEventPresenter {
   #pointsContainerComponent = null;
@@ -15,10 +11,11 @@ export default class TripEventPresenter {
   #tripEvent = null;
   #destinations = null;
   #offers = null;
+  #currentSortType = null;
 
   #pointComponent = null;
   #formComponent = null;
-  #mode = Mode.DEFAULT;
+  #mode = PointMode.DEFAULT;
 
   #changeData = null;
   #resetPoints = null;
@@ -30,10 +27,11 @@ export default class TripEventPresenter {
     this.#resetPoints = resetPoints;
   }
 
-  init(tripEvent, offers, destinations) {
+  init(tripEvent, offers, destinations, currentSortType) {
     this.#tripEvent = tripEvent;
     this.#offers = offers ?? this.#offers;
     this.#destinations = destinations ?? this.#destinations;
+    this.#currentSortType = currentSortType ?? this.#currentSortType;
 
     const prevPointComponent = this.#pointComponent;
     const prevFormComponent = this.#formComponent;
@@ -75,35 +73,60 @@ export default class TripEventPresenter {
     this.#formComponent.setRollupButtonClickHandler(this.#replaceFormToPoint);
     this.#formComponent.setEscapeKeydownHandler(this.#replaceFormToPoint);
     this.#formComponent.setSubmitHandler(this.#formSubmitHandler);
-
     this.#formComponent.setDeleteButtonClickHandler(this.#deleteButtonClickHandler);
     // console.log("Обработчики закрытия")
+
+    this.#formComponent.setFormInnerHandlers();
 
     this.#resetPoints();
     this.#replacePointToForm();
   };
 
-  #formSubmitHandler = (newPointData) => {
+  #formSubmitHandler = (update) => {
+    const point = this.#tripEvent;
+    let isUpdateTypeMinor;
+
+    switch (this.#currentSortType) {
+      case SortType.DAY:
+        isUpdateTypeMinor = !isDatesEqual(point.dateFrom, update.dateFrom);
+        break;
+      case SortType.TIME:
+        isUpdateTypeMinor = getEventDuration(point.dateFrom, point.dateTo) !== getEventDuration(update.dateFrom, update.dateTo);
+        break;
+      case SortType.PRICE:
+        isUpdateTypeMinor = point.basePrice !== update.basePrice;
+        break;
+    }
+
+    this.#replaceFormToPoint();
     this.#changeData(
       UserAction.UPDATE,
-      UpdateType.MINOR,
-      newPointData,
+      UpdateType[
+        isUpdateTypeMinor ? 'MINOR' : 'PATCH'
+      ],
+      update,
     );
-    this.#replaceFormToPoint();
   };
 
   #replacePointToForm = () => {
+    this.#mode = PointMode.EDITING;
+    this.#formComponent.mode = PointMode.EDITING;
     replace(this.#formComponent, this.#pointComponent);
-    this.#mode = Mode.EDITING;
   };
 
   #replaceFormToPoint = () => {
+    this.#mode = PointMode.DEFAULT;
+    this.#formComponent.mode = PointMode.DEFAULT;
     replace(this.#pointComponent, this.#formComponent);
-    this.#mode = Mode.DEFAULT;
+    
   };
 
   #deleteButtonClickHandler = () => {
-    this.destroy();
+    this.#changeData(
+      UserAction.DELETE,
+      UpdateType.MINOR,
+      this.#tripEvent,
+    );
 
     const pointListLength = this.#pointsContainer.children.length;
 
@@ -114,9 +137,8 @@ export default class TripEventPresenter {
   };
 
   resetView = () => {
-    if (this.#mode !== Mode.DEFAULT) {
+    if (this.#mode !== PointMode.DEFAULT) {
       this.#formComponent.reset(this.#tripEvent);
-      this.#formComponent.removeEventListeners();
       this.#replaceFormToPoint();
     }
   };

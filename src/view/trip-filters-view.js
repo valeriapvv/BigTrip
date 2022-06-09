@@ -1,22 +1,22 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {filter} from '../filter.js';
 
-const createTripFilterItemTemplate = (tripFilter, isChecked) => {
+const createTripFilterItemTemplate = (tripFilter, currentFilterType) => {
   const {name, count} = tripFilter;
 
   return (`
     <div class="trip-filters__filter">
       <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${name}" 
       ${count === 0 ? 'disabled' : ''}
-      ${isChecked ? 'checked' : ''}>
+      ${currentFilterType === name ? 'checked' : ''}>
       <label class="trip-filters__filter-label" for="filter-${name}">${name.replace(name[0], name[0].toUpperCase())} ${count}</label>
     </div>
   `);
 };
 
-const createTripFiltersTemplate = (filters) => (
+const createTripFiltersTemplate = (filters, currentFilterType) => (
   `<form class="trip-filters" action="#" method="get">
-     ${filters.map((it, index) => createTripFilterItemTemplate(it, index === 0)).join('')}
+     ${filters.map((it) => createTripFilterItemTemplate(it, currentFilterType)).join('')}
      <button class="visually-hidden" type="submit">Accept filter</button>
    </form>`
 );
@@ -24,28 +24,28 @@ const createTripFiltersTemplate = (filters) => (
 
 export default class TripFiltersView extends AbstractView {
   #filters = null;
-  #filterValue = null;
-  #tripListPresenter = null;
-  #tripEvents = null;
+  #currentFilterType = null;
 
-  constructor(filters) {
+  constructor(filters, currentFilterType) {
     super();
     this.#filters = filters;
+    this.#currentFilterType = currentFilterType;
   }
 
   get template() {
-    return createTripFiltersTemplate(this.#filters);
+    return createTripFiltersTemplate(this.#filters, this.#currentFilterType);
   }
 
-  setFiltersChangeHandler = (tripEvents, tripListPresenter) => {
-    this.#tripListPresenter = tripListPresenter;
-    this.#tripEvents = tripEvents;
+  setFiltersChangeHandler = (onChange) => {
+    this._callback.onChange = onChange;
     this.element.addEventListener('change', this.#filtersChangeHandler);
   };
 
-  #filtersChangeHandler = () => {
-    const value = this.element['trip-filter'].value;
-    this.#tripListPresenter.tripEvents = filter[value](this.#tripEvents);
-    this.#tripListPresenter.init();
+  #filtersChangeHandler = (evt) => {
+    this._callback.onChange(evt.target.value);
+
+    // const value = this.element['trip-filter'].value;
+    // this.#tripListPresenter.tripEvents = filter[value](this.#tripEvents);
+    // this.#tripListPresenter.init();
   };
 }

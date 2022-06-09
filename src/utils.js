@@ -76,8 +76,10 @@ const createNewDateChain = (startDate = defaultStartDate) => {
   });
 };
 
+const getEventDuration = (dateFrom, dateTo) => Math.abs(dayjs(dateFrom).diff(dayjs(dateTo), 'minute'));
+
 const getDateDifference = (date1, date2) => {
-  const difference = Math.abs(dayjs(date1).diff(dayjs(date2), 'minute'));
+  const difference = getEventDuration(date1, date2);
 
   const days = Math.floor(difference / 60 / 24);
   const hours = Math.floor(difference % (60*24) / 60);
@@ -111,17 +113,19 @@ const findEndDate = (points) => points.reduce((endDate, point) => {
   return endDate.isBefore(currentDate) ? currentDate : endDate;
 }, dayjs(points[0]?.dateTo));
 
+const isDatesEqual = (dateA, dateB) => dayjs(dateA).isSame(dayjs(dateB), 'minute');
+
 
 //удалить
-const updateItem = (update, items) => {
-  const index = items.findIndex((item) => item.id === update.id);
+// const updateItem = (update, items) => {
+//   const index = items.findIndex((item) => item.id === update.id);
 
-  if (index === -1) {
-    return items;
-  }
+//   if (index === -1) {
+//     return items;
+//   }
 
-  return [...items.slice(0, index), update, ...items.slice(index + 1)];
-};
+//   return [...items.slice(0, index), update, ...items.slice(index + 1)];
+// };
 
 // сортировка
 const sortByDay = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
@@ -147,7 +151,8 @@ const sortByPrice = (pointA, pointB) => {
   }
 
   return sortValue;
-};
+}; 
+
 
 export {
   getRandomArrayElement,
@@ -158,14 +163,17 @@ export {
   findSelectedOffers,
   createNewDateChain,
   formatDate,
+  getEventDuration,
   getDateDifference,
   isFutureEvent,
   isPastEvent,
   findStartDate,
   findEndDate,
-  updateItem,
+  // updateItem,
   sortByDay,
   sortByTime,
   sortByPrice,
+  isDatesEqual,
+
 };
 
