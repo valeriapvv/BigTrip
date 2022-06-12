@@ -1,6 +1,5 @@
 import TripEventView from '../view/trip-event-view.js';
 import TripEventChangingView from '../view/trip-event-changing-view.js';
-import EmptyListMessagePresenter from './empty-list-message-presenter.js';
 import {render, replace, remove} from '../framework/render.js';
 import {UpdateType, UserAction, SortType, PointMode} from '../data/constants.js';
 import {isDatesEqual, getEventDuration} from '../utils.js';
@@ -74,8 +73,6 @@ export default class TripEventPresenter {
     this.#formComponent.setEscapeKeydownHandler(this.#replaceFormToPoint);
     this.#formComponent.setSubmitHandler(this.#formSubmitHandler);
     this.#formComponent.setDeleteButtonClickHandler(this.#deleteButtonClickHandler);
-    // console.log("Обработчики закрытия")
-
     this.#formComponent.setFormInnerHandlers();
 
     this.#resetPoints();
@@ -127,13 +124,6 @@ export default class TripEventPresenter {
       UpdateType.MINOR,
       this.#tripEvent,
     );
-
-    const pointListLength = this.#pointsContainer.children.length;
-
-    if(!pointListLength) {
-      const emptyListMesssagePresenter = new EmptyListMessagePresenter(this.#pointsContainerComponent);
-      emptyListMesssagePresenter.init();
-    }
   };
 
   resetView = () => {

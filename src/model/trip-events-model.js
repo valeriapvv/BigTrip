@@ -5,7 +5,7 @@ export default class TripEventsModel extends Observable {
   #tripEvents = (() => {
     let id = 0;
 
-    return Array.from({length: 20}, () => generatePoint(++id));
+    return Array.from({length: 10}, () => generatePoint(++id));
   })();
 
   #destinations = destinations;

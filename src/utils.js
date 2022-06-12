@@ -116,17 +116,6 @@ const findEndDate = (points) => points.reduce((endDate, point) => {
 const isDatesEqual = (dateA, dateB) => dayjs(dateA).isSame(dayjs(dateB), 'minute');
 
 
-//удалить
-// const updateItem = (update, items) => {
-//   const index = items.findIndex((item) => item.id === update.id);
-
-//   if (index === -1) {
-//     return items;
-//   }
-
-//   return [...items.slice(0, index), update, ...items.slice(index + 1)];
-// };
-
 // сортировка
 const sortByDay = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 
@@ -169,7 +158,6 @@ export {
   isPastEvent,
   findStartDate,
   findEndDate,
-  // updateItem,
   sortByDay,
   sortByTime,
   sortByPrice,
