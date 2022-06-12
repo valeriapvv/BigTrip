@@ -25,6 +25,11 @@ const PointMode = {
   EDITING: 'EDITING',
 };
 
+const FormType = {
+  EDIT: 'edit',
+  CREATE: 'create',
+};
+
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -49,4 +54,4 @@ const UserAction = {
   DELETE: 'DELETE',
 };
 
-export {TYPES, POINTS, PointMode, FilterType, SortType, UpdateType, UserAction};
+export {TYPES, POINTS, PointMode, FormType, FilterType, SortType, UpdateType, UserAction};

@@ -40,7 +40,7 @@ export default class TripEventsModel extends Observable {
   };
 
   addTripEvent = (updateType, update) => {
-    this.#tripEvents = [...update, this.#tripEvents];
+    this.#tripEvents = [update, ...this.#tripEvents];
 
     this._notify(updateType, update);
   };

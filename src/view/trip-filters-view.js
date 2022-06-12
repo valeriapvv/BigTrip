@@ -42,9 +42,5 @@ export default class TripFiltersView extends AbstractView {
 
   #filtersChangeHandler = (evt) => {
     this._callback.onChange(evt.target.value);
-
-    // const value = this.element['trip-filter'].value;
-    // this.#tripListPresenter.tripEvents = filter[value](this.#tripEvents);
-    // this.#tripListPresenter.init();
   };
 }

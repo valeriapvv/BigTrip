@@ -5,8 +5,11 @@ import {
   createRandomUniqueIntegerGenerator,
   findTypeOffers,
   createNewDateChain,
+  formatDate,
 } from '../utils.js';
 import {TYPES, POINTS} from './constants.js';
+import dayjs from 'dayjs';
+
 
 const destinations = POINTS.map((it) => ({
   'name': it,
@@ -76,4 +79,17 @@ const generatePoint = (id) => {
   });
 };
 
-export {generatePoint, destinations, offers};
+const today = formatDate(dayjs());
+
+const defaultState = {
+  'basePrice': 0,
+  'dateFrom': today,
+  'dateTo': today,
+  'destination': destinations[0],
+  'id': 0,
+  'isFavorite': false,
+  'offers': [],
+  'type': TYPES[0]
+};
+
+export {generatePoint, destinations, offers, defaultState};

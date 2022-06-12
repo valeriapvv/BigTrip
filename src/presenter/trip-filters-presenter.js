@@ -27,7 +27,7 @@ export default class TripFiltersPresenter {
     return getFilters(this.tripEvents);
   }
 
-  init = (/*, tripEventListPresenter*/) => {
+  init = () => {
     const prevTripFiltersComponent = this.#tripFiltersComponent;
 
     this.#tripFiltersComponent = new TripFiltersView(this.filters, this.#tripFiltersModel.filter);

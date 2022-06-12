@@ -1,7 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {TYPES} from '../data/constants.js';
 import {formatDate, findTypeOffers} from '../utils.js';
-import {PointMode} from '../data/constants.js';
+import {defaultState} from '../data/trip-data-generation.js';
+import {PointMode, FormType} from '../data/constants.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -42,7 +43,7 @@ const createPhotosContainerTemplate = (pictures) => (
   </div>`
 );
 
-const createTripEventChangingTemplate = (tripEvent, allOffers, destinations) => {
+const createTripEventChangingTemplate = (tripEvent, allOffers, destinations, formType) => {
   const {
     basePrice,
     destination,
@@ -112,10 +113,11 @@ const createTripEventChangingTemplate = (tripEvent, allOffers, destinations) => 
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          <button class="event__reset-btn" type="reset">${formType === FormType.CREATE ? 'Cancel' : 'Delete'}</button>
+          ${formType === FormType.EDIT ?
+      `<button class="event__rollup-btn" type="button">
+              <span class="visually-hidden">Open event</span>
+            </button>` : ''}
         </header>
         <section class="event__details">
 
@@ -146,22 +148,24 @@ export default class TripEventChangingView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
   mode = PointMode.DEFAULT;
+  #formType = null;
 
-  constructor(tripEvent, allOffers, destinations) {
+  constructor(tripEvent, allOffers, destinations, formType = FormType.EDIT) {
     super();
-    this.#tripEvent = tripEvent;
-    this._state = {...tripEvent};
+    this.#tripEvent = tripEvent ?? defaultState;
+    this._state = {...this.#tripEvent};
     this.#destinations = destinations;
     this.#offers = allOffers;
+    this.#formType = formType;
   }
 
   get template() {
-    return createTripEventChangingTemplate(this._state, this.#offers, this.#destinations);
+    return createTripEventChangingTemplate(this._state, this.#offers, this.#destinations, this.#formType);
   }
 
   removeElement () {
     if (this.mode === PointMode.EDITING) {
-      // console.log('REMOVE');
+
       this.#removeEventListeners();
       this.#removeInnerEventListeners();
     }
@@ -174,7 +178,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     if (this.mode === PointMode.EDITING) {
-      // console.log('RESTORE');
+
       this.setFormInnerHandlers();
       this.#setFormCloseHandlers();
     }
@@ -217,7 +221,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
         onClose: this.#dateToChangeHandler,
       },
     );
-    // console.log('datepickers');
+
   };
 
   #dateFromChangeHandler = ([newDate]) => {
@@ -280,7 +284,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
     this._callback.onRollup = onRollup;
     this.#rollupButton = this.element.querySelector('.event__rollup-btn');
 
-    this.#rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
+    this.#rollupButton?.addEventListener('click', this.#rollupButtonClickHandler);
   };
 
   setEscapeKeydownHandler = (onKeydown) => {
@@ -307,11 +311,11 @@ export default class TripEventChangingView extends AbstractStatefulView {
     this.#removeEventListeners();
 
     this.updateElement(point);
-    // console.log('REMOVE');
+
   };
 
   #removeEventListeners = () => {
-    this.#rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
+    this.#rollupButton?.removeEventListener('click', this.#rollupButtonClickHandler);
     this.#deleteButton.removeEventListener('click', this.#deleteButtonClickHandler);
     document.removeEventListener('keydown', this.#onEscapeKeydown);
     this.#form.removeEventListener('submit', this.#submitHandler);
@@ -331,7 +335,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
     if (this.#datepickerTo) {
       this.#datepickerTo.destroy();
       this.#datepickerTo = null;
-      // console.log('destroy datepickers');
+
     }
   };
 
@@ -354,7 +358,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
     this.#removeInnerEventListeners();
     this.#removeEventListeners();
-    // console.log('REMOVE');
+
     this._callback.onSubmit(this._state);
   };
 
