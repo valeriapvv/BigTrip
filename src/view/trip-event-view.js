@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {formatDate, getDateDifference, findSelectedOffers} from '../utils.js';
+import he from 'he';
 
 const createSelectedOffersTemplate = (selectedOffers) => selectedOffers.map((it) => (
   `<li class="event__offer">
@@ -30,7 +31,7 @@ const createTripEventTemplate = (tripEvent, allOffers) => {
            <div class="event__type">
              <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
            </div>
-           <h3 class="event__title">${type} ${name}</h3>
+           <h3 class="event__title">${type} ${he.encode(name)}</h3>
            <div class="event__schedule">
              <p class="event__time">
                <time class="event__start-time" datetime="${formatDate(dateFrom, 'YYYY-MM-DDTHH:mm')}">
@@ -100,7 +101,6 @@ export default class TripEventView extends AbstractView {
   #removeEventListeners = () => {
     this.#rollupButton.removeEventListener('click', this.#rollupButtonClickHandler);
     this.#favoriteButton.removeEventListener('click', this.#onFavoriteButtonClick);
-    // console.log("точка: удалились")
   };
 
   #rollupButtonClickHandler = () => {
@@ -109,6 +109,5 @@ export default class TripEventView extends AbstractView {
 
   #onFavoriteButtonClick = () => {
     this._callback.favoriteButtonClick();
-    // this.#favoriteButton.classList.toggle('event__favorite-btn--active');
   };
 }

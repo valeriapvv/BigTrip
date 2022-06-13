@@ -46,6 +46,11 @@ export default class TripSortView extends AbstractView {
     this.#currentSortType = sortType;
   }
 
+  removeElement () {
+    this.element.removeEventListener('change', this.#sortChangeHandler);
+    super.removeElement();
+  }
+
   get template() {
     return createTripSortTemplate(this.#currentSortType);
   }

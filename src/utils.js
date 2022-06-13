@@ -86,11 +86,12 @@ const getDateDifference = (date1, date2) => {
   const minutes = difference % 60;
 
   const formatedDays = `${days >= 1 ? `${days < 10 ? '0' : ''}${days}D`: ''}`;
+
+  const noHours =  days >= 1 ? '00H' : '';
   const formatedHours = `${hours >= 1
     ? `${hours < 10 ? '0' : ''}${hours}H`
-    : days >= 1
-      ? '00H'
-      : ''}`;
+    : noHours}`;
+
   const formatedMinutes = `${minutes < 10 ? '0' : ''}${minutes}M`;
 
 

@@ -7,8 +7,9 @@ const createTripInfoTitleTemplate = (tripEvents) => {
       points.splice(index, 1);
     }
   });
-  const taskPath = `${points.slice(0, 5).join(' &mdash; ')} ${
-    points.length > 5 ? ` &mdash; . . . &mdash; ${points[points.length-1]}` : ''}`;
+
+  const taskPath = `${points.length <= 3 ? points.join(' &mdash; ')
+    : `${points[0]  } &mdash; . . . &mdash; ${  points[points.length - 1]}`}`;
 
   return `<h1 class="trip-info__title">${taskPath}</h1>`;
 };

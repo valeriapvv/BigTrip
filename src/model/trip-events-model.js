@@ -15,10 +15,6 @@ export default class TripEventsModel extends Observable {
     return this.#tripEvents;
   }
 
-  set tripEvents(newTripEvents) {
-    this.#tripEvents = newTripEvents;
-  }
-
   get destinations() {
     return this.#destinations;
   }

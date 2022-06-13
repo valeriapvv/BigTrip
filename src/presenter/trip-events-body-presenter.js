@@ -63,7 +63,6 @@ export default class TripEventsBodyPresenter {
   };
 
   #createNewPoint = () => {
-    // this.#resetTripEvents();
     const pointsCount = this.#tripEventsModel.tripEvents.length;
     this.#tripFiltersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
 
@@ -80,6 +79,14 @@ export default class TripEventsBodyPresenter {
       this.#destinations,
       () => {
         this.#addButtonComponent.element.disabled = false;
+
+        if (!this.tripEvents.length) {
+          this.#currentSortType = SortType.DAY;
+          remove(this.#tripSortComponent);
+          this.#tripSortComponent = null;
+
+          this.#renderNoPointsMessage();
+        }
       },
     );
   };
@@ -92,7 +99,6 @@ export default class TripEventsBodyPresenter {
 
     if (this.#tripSortComponent === null) {
       this.#renderSort();
-      // console.log('create Sort');
     }
 
     this.#renderTripEvents(this.tripEvents);
@@ -112,7 +118,6 @@ export default class TripEventsBodyPresenter {
     this.#currentSortType = sortType;
 
     this.#clearTripEventList();
-
     this.#renderTripEvents(this.tripEvents);
   };
 
@@ -145,7 +150,6 @@ export default class TripEventsBodyPresenter {
   };
 
   #handleViewAction = (actionType, updateType, update) => {
-
     switch (actionType) {
       case UserAction.UPDATE:
         this.#tripEventsModel.updateTripEvent(updateType, update);
@@ -160,7 +164,6 @@ export default class TripEventsBodyPresenter {
   };
 
   #handleModelEvent = (updateType, update) => {
-
     switch (updateType) {
       case UpdateType.PATCH:
         this.#tripEventPresenter.get(update.id).init(update);

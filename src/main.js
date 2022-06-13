@@ -1,7 +1,6 @@
 import TripInfoPresenter from './presenter/trip-info-presenter.js';
 import TripEventsBodyPresenter from './presenter/trip-events-body-presenter.js';
 import TripFiltersPresenter from './presenter/trip-filters-presenter.js';
-// import AddEventButtonPresenter from './presenter/add-event-button-presenter.js';
 import TripEventsModel from './model/trip-events-model.js';
 import TripFiltersModel from './model/trip-filters-model.js';
 
@@ -13,7 +12,6 @@ const tripEventsModel = new TripEventsModel();
 const tripFiltersModel = new TripFiltersModel();
 
 const tripInfoPresenter = new TripInfoPresenter(tripMainSite, tripEventsModel);
-// const addEventButtonPresenter = new AddEventButtonPresenter();
 
 tripInfoPresenter.init();
 
@@ -26,4 +24,3 @@ tripFiltersPresenter.init();
 
 tripEventsBodyPresenter.init();
 
-// addEventButtonPresenter.init(document.querySelector('.trip-events__list'));

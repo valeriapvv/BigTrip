@@ -7,7 +7,13 @@ const createTripInfoSectionTemplate = () => (
 );
 
 export default class TripInfoSectionView extends AbstractView {
+  #mainElement = this.element.querySelector('.trip-info__main');
+
   get template() {
     return createTripInfoSectionTemplate();
+  }
+
+  get mainElement() {
+    return this.#mainElement;
   }
 }

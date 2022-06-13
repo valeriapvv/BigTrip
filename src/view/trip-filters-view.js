@@ -31,6 +31,11 @@ export default class TripFiltersView extends AbstractView {
     this.#currentFilterType = currentFilterType;
   }
 
+  removeElement () {
+    this.element.removeEventListener('change', this.#filtersChangeHandler);
+    super.removeElement();
+  }
+
   get template() {
     return createTripFiltersTemplate(this.#filters, this.#currentFilterType);
   }
