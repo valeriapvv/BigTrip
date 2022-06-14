@@ -30,8 +30,6 @@ export default class TripEventsBodyPresenter {
   constructor(tripEventsBodyContainer, tripEventsModel, tripFiltersModel) {
     this.#tripEventsBodyContainer = tripEventsBodyContainer;
     this.#tripEventsModel = tripEventsModel;
-    this.#destinations = this.#tripEventsModel.destinations;
-    this.#offers = this.#tripEventsModel.offers;
     this.#tripFiltersModel = tripFiltersModel;
 
     this.#newPointPresenter = new TripNewPresenter(this.#tripEventListComponent, this.#handleViewAction);
@@ -59,7 +57,9 @@ export default class TripEventsBodyPresenter {
   }
 
   init = () => {
+    // console.log("init");
     this.#renderItinerary();
+    // console.log("Inited")
   };
 
   #createNewPoint = () => {
@@ -100,6 +100,9 @@ export default class TripEventsBodyPresenter {
     if (this.#tripSortComponent === null) {
       this.#renderSort();
     }
+
+    this.#destinations = this.#tripEventsModel.destinations;
+    this.#offers = this.#tripEventsModel.offers;
 
     this.#renderTripEvents(this.tripEvents);
   };
@@ -174,6 +177,10 @@ export default class TripEventsBodyPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearTripEventList({resetSortType: true});
+        this.#renderItinerary();
+        break;
+      case UpdateType.INIT:
+        this.#clearTripEventList();
         this.#renderItinerary();
         break;
     }

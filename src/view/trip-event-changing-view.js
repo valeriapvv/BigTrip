@@ -111,7 +111,7 @@ const createTripEventChangingTemplate = (tripEvent, allOffers, destinations, for
               <span class="visually-hidden">Price</span>
                       &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price"  max="2000" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price"  min="0" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>

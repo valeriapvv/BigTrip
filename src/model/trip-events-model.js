@@ -1,15 +1,38 @@
 import Observable from '../framework/observable.js';
-import {generatePoint, destinations, offers} from '../data/trip-data-generation.js';
+import {UpdateType} from '../data/constants.js';
+// import {generatePoint, destinations, offers} from '../data/trip-data-generation.js';
 
 export default class TripEventsModel extends Observable {
-  #tripEvents = (() => {
-    let id = 0;
+  #tripEventsApiService = null;
+  // #tripEvents = (() => {
+  //   let id = 0;
 
-    return Array.from({length: 10}, () => generatePoint(++id));
-  })();
+  //   return Array.from({length: 10}, () => generatePoint(++id));
+  // })();
 
-  #destinations = destinations;
-  #offers = offers;
+  // #destinations = destinations;
+  // #offers = offers;
+  #tripEvents = [];
+  #destinations = [];
+  #offers = [];
+
+  constructor(tripEventsApiService) {
+    super();
+    this.#tripEventsApiService = tripEventsApiService;
+
+    // this.#tripEventsApiService.tripEvents.then((points) => {
+    //   this.#tripEvents = points.map(this.#adaptToClient);
+    //   console.log(this.#tripEvents);
+    // });
+
+    // this.#tripEventsApiService.destinations.then((destinations) => {
+    //   this.#destinations = destinations;
+    // });
+
+    // this.#tripEventsApiService.offers.then((offers) => {
+    //   this.#offers = offers;
+    // })
+  }
 
   get tripEvents() {
     return this.#tripEvents;
@@ -22,6 +45,39 @@ export default class TripEventsModel extends Observable {
   get offers() {
     return this.#offers;
   }
+
+  init = async () => {
+    try {
+      const points = await this.#tripEventsApiService.tripEvents;
+      this.#tripEvents = points.map(this.#adaptToClient);
+      this.#destinations = (await this.#tripEventsApiService.destinations).slice();
+      console.log(this.destinations);
+      this.#offers = (await this.#tripEventsApiService.offers).slice();
+      console.log(this.offers);
+    } catch {
+      this.#tripEvents = [];
+      this.#destinations = [];
+      this.#offers = [];
+    }
+
+    this._notify(UpdateType.INIT);
+  };
+
+  #adaptToClient = (point) => {
+    const adaptedPoint = {...point,
+      basePrice: point.base_price,
+      dateFrom: point.date_from,
+      dateTo: point.date_to,
+      isFavorite: point.is_favorite,
+    };
+
+    delete adaptedPoint.base_price;
+    delete adaptedPoint.date_from;
+    delete adaptedPoint.date_to;
+    delete adaptedPoint.is_favorite;
+
+    return adaptedPoint;
+  };
 
   updateTripEvent = (updateType, update) => {
     const index = this.#tripEvents.findIndex((point) => point.id === update.id);

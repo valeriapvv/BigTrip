@@ -45,7 +45,7 @@ const createRandomUniqueIntegerGenerator = (min, max) => {
   };
 };
 
-const findTypeOffers = (offerType, allOffers) => allOffers.find(({type}) => type === offerType).offers;
+const findTypeOffers = (offerType, allOffers) => allOffers.find(({type}) => type === offerType)?.offers || [];
 
 const findSelectedOffers = (point, allOffers) => findTypeOffers(point.type, allOffers).filter(({id}) => point.offers.includes(id));
 
