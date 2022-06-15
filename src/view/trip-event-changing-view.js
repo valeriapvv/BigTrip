@@ -1,6 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {formatDate, findTypeOffers} from '../utils.js';
-// import {defaultState} from '../data/trip-data-generation.js';
 import {PointMode, FormType} from '../data/constants.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';

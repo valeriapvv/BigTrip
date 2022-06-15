@@ -64,16 +64,21 @@ export default class TripEventsModel extends Observable {
     return adaptedPoint;
   };
 
-  updateTripEvent = (updateType, update) => {
+  updateTripEvent = async (updateType, update) => {
     const index = this.#tripEvents.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Невозможно обновить несуществующую точку маршрута');
     }
 
-    this.#tripEvents = [...this.#tripEvents.slice(0, index), update, ...this.#tripEvents.slice(index + 1)];
-
-    this._notify(updateType, update);
+    try {
+      const responce = await this.#tripEventsApiService.updateTripEvent(update);
+      const updatedPoint = this.#adaptToClient(responce);
+      this.#tripEvents = [...this.#tripEvents.slice(0, index), updatedPoint, ...this.#tripEvents.slice(index + 1)];
+      this._notify(updateType, updatedPoint);
+    } catch (err) {
+      throw new Error('Не удалось обновить данные');
+    }
   };
 
   addTripEvent = (updateType, update) => {

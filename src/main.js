@@ -10,7 +10,7 @@ const tripFiltersSite = tripMainSite.querySelector('.trip-controls__filters');
 const tripEventsBodySite = document.querySelector('.trip-events');
 
 const AUTHORIZATION = 'Basic ybzNk0dk32LkdjkbK';
-const END_POINT = 'https://17.ecmascript.pages.academy/big-trip/';
+const END_POINT = 'https://17.ecmascript.pages.academy/big-trip';
 
 const tripEventsModel = new TripEventsModel(new TripEventsApiService(END_POINT ,AUTHORIZATION));
 const tripFiltersModel = new TripFiltersModel();

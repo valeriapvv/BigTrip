@@ -36,7 +36,7 @@ export default class TripEventsBodyPresenter {
     this.#tripFiltersModel = tripFiltersModel;
 
     this.#newPointPresenter = new TripNewPresenter(this.#tripEventListComponent, this.#handleViewAction);
-    this.#addButtonComponent.setClickHandler(this.#createNewPoint);
+    this.#addButtonComponent.element.disabled = true;
 
     this.#tripEventsModel.addObserver(this.#handleModelEvent);
     this.#tripFiltersModel.addObserver(this.#handleModelEvent);
@@ -194,6 +194,9 @@ export default class TripEventsBodyPresenter {
         this.#isLoading = false;
         remove(this.#loadingMessageComponent);
         this.#loadingMessageComponent = null;
+
+        this.#addButtonComponent.element.disabled = false;
+        this.#addButtonComponent.setClickHandler(this.#createNewPoint);
 
         this.#renderItinerary();
         break;
