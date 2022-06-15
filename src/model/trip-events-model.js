@@ -19,19 +19,6 @@ export default class TripEventsModel extends Observable {
   constructor(tripEventsApiService) {
     super();
     this.#tripEventsApiService = tripEventsApiService;
-
-    // this.#tripEventsApiService.tripEvents.then((points) => {
-    //   this.#tripEvents = points.map(this.#adaptToClient);
-    //   console.log(this.#tripEvents);
-    // });
-
-    // this.#tripEventsApiService.destinations.then((destinations) => {
-    //   this.#destinations = destinations;
-    // });
-
-    // this.#tripEventsApiService.offers.then((offers) => {
-    //   this.#offers = offers;
-    // })
   }
 
   get tripEvents() {
@@ -51,9 +38,7 @@ export default class TripEventsModel extends Observable {
       const points = await this.#tripEventsApiService.tripEvents;
       this.#tripEvents = points.map(this.#adaptToClient);
       this.#destinations = (await this.#tripEventsApiService.destinations).slice();
-      console.log(this.destinations);
-      this.#offers = (await this.#tripEventsApiService.offers).slice();
-      console.log(this.offers);
+      this.#offers = await this.#tripEventsApiService.offers;
     } catch {
       this.#tripEvents = [];
       this.#destinations = [];

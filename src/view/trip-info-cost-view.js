@@ -3,8 +3,7 @@ import {findSelectedOffers} from '../utils.js';
 
 const createTripInfoCostTemplate = (tripEvents, allOffers) => {
   const basePriceTotal = tripEvents.reduce((total, {basePrice}) => total + basePrice, 0);
-  console.log(tripEvents);
-  console.log(allOffers);
+
   const offerPriceTotal = tripEvents.reduce((total, tripEvent) => {
     const selectedOffers = findSelectedOffers(tripEvent, allOffers);
 

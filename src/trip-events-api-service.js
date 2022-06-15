@@ -28,18 +28,17 @@ export default class TripEventsApiService extends ApiService {
       body: JSON.stringify(this.#adaptToServer(point)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
-
     const parsedResponse = await ApiService.parseResponse(responce);
 
-    return parseResponse;
+    return parsedResponse;
   };
 
   #adaptToServer = (point) => {
     const adaptedPoint = {...point,
-      base_price: point.basePrice,
-      date_from: point.dateFrom,
-      date_to: point.dateTo,
-      is_favotite: point.isFavorite,
+      'base_price': point.basePrice,
+      'date_from': point.dateFrom,
+      'date_to': point.dateTo,
+      'is_favotite': point.isFavorite,
     };
 
     delete adaptedPoint.basePrice;

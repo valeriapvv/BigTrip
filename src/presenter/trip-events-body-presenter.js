@@ -2,6 +2,7 @@ import TripSortView from '../view/trip-sort-view.js';
 import TripEventListView from '../view/trip-event-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
 import EmptyTripListMessageView from '../view/empty-trip-list-message-view.js';
+import LoadingMessageView from '../view/loading-message-view.js';
 import AddButtonView from '../view/add-button-view.js';
 import TripNewPresenter from './trip-new-presenter';
 import {render, remove} from '../framework/render.js';
@@ -26,6 +27,8 @@ export default class TripEventsBodyPresenter {
   #currentFilter = FilterType.EVETYTHING;
 
   #noPointsMessageComponent = null;
+  #loadingMessageComponent = null;
+  #isLoading = true;
 
   constructor(tripEventsBodyContainer, tripEventsModel, tripFiltersModel) {
     this.#tripEventsBodyContainer = tripEventsBodyContainer;
@@ -57,9 +60,7 @@ export default class TripEventsBodyPresenter {
   }
 
   init = () => {
-    // console.log("init");
     this.#renderItinerary();
-    // console.log("Inited")
   };
 
   #createNewPoint = () => {
@@ -92,6 +93,11 @@ export default class TripEventsBodyPresenter {
   };
 
   #renderItinerary = () => {
+    if (this.#isLoading) {
+      this.#renderLoadingMessage();
+      return;
+    }
+
     if (!this.tripEvents.length) {
       this.#renderNoPointsMessage();
       return;
@@ -122,6 +128,11 @@ export default class TripEventsBodyPresenter {
 
     this.#clearTripEventList();
     this.#renderTripEvents(this.tripEvents);
+  };
+
+  #renderLoadingMessage = () => {
+    this.#loadingMessageComponent = new LoadingMessageView();
+    render(this.#loadingMessageComponent, this.#tripEventsBodyContainer);
   };
 
   #renderNoPointsMessage = () => {
@@ -180,7 +191,10 @@ export default class TripEventsBodyPresenter {
         this.#renderItinerary();
         break;
       case UpdateType.INIT:
-        this.#clearTripEventList();
+        this.#isLoading = false;
+        remove(this.#loadingMessageComponent);
+        this.#loadingMessageComponent = null;
+
         this.#renderItinerary();
         break;
     }
