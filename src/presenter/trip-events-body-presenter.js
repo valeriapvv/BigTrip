@@ -2,6 +2,7 @@ import TripSortView from '../view/trip-sort-view.js';
 import TripEventListView from '../view/trip-event-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
 import EmptyTripListMessageView from '../view/empty-trip-list-message-view.js';
+import LoadingMessageView from '../view/loading-message-view.js';
 import AddButtonView from '../view/add-button-view.js';
 import TripNewPresenter from './trip-new-presenter';
 import {render, remove} from '../framework/render.js';
@@ -26,16 +27,16 @@ export default class TripEventsBodyPresenter {
   #currentFilter = FilterType.EVETYTHING;
 
   #noPointsMessageComponent = null;
+  #loadingMessageComponent = null;
+  #isLoading = true;
 
   constructor(tripEventsBodyContainer, tripEventsModel, tripFiltersModel) {
     this.#tripEventsBodyContainer = tripEventsBodyContainer;
     this.#tripEventsModel = tripEventsModel;
-    this.#destinations = this.#tripEventsModel.destinations;
-    this.#offers = this.#tripEventsModel.offers;
     this.#tripFiltersModel = tripFiltersModel;
 
     this.#newPointPresenter = new TripNewPresenter(this.#tripEventListComponent, this.#handleViewAction);
-    this.#addButtonComponent.setClickHandler(this.#createNewPoint);
+    this.#addButtonComponent.element.disabled = true;
 
     this.#tripEventsModel.addObserver(this.#handleModelEvent);
     this.#tripFiltersModel.addObserver(this.#handleModelEvent);
@@ -92,6 +93,11 @@ export default class TripEventsBodyPresenter {
   };
 
   #renderItinerary = () => {
+    if (this.#isLoading) {
+      this.#renderLoadingMessage();
+      return;
+    }
+
     if (!this.tripEvents.length) {
       this.#renderNoPointsMessage();
       return;
@@ -100,6 +106,9 @@ export default class TripEventsBodyPresenter {
     if (this.#tripSortComponent === null) {
       this.#renderSort();
     }
+
+    this.#destinations = this.#tripEventsModel.destinations;
+    this.#offers = this.#tripEventsModel.offers;
 
     this.#renderTripEvents(this.tripEvents);
   };
@@ -119,6 +128,11 @@ export default class TripEventsBodyPresenter {
 
     this.#clearTripEventList();
     this.#renderTripEvents(this.tripEvents);
+  };
+
+  #renderLoadingMessage = () => {
+    this.#loadingMessageComponent = new LoadingMessageView();
+    render(this.#loadingMessageComponent, this.#tripEventsBodyContainer);
   };
 
   #renderNoPointsMessage = () => {
@@ -174,6 +188,16 @@ export default class TripEventsBodyPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearTripEventList({resetSortType: true});
+        this.#renderItinerary();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingMessageComponent);
+        this.#loadingMessageComponent = null;
+
+        this.#addButtonComponent.element.disabled = false;
+        this.#addButtonComponent.setClickHandler(this.#createNewPoint);
+
         this.#renderItinerary();
         break;
     }

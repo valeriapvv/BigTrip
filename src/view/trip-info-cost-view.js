@@ -7,7 +7,7 @@ const createTripInfoCostTemplate = (tripEvents, allOffers) => {
   const offerPriceTotal = tripEvents.reduce((total, tripEvent) => {
     const selectedOffers = findSelectedOffers(tripEvent, allOffers);
 
-    return total + selectedOffers.reduce((offerTotal, {price}) => offerTotal + price, 0);
+    return total + (selectedOffers?.reduce((offerTotal, {price}) => offerTotal + price, 0) || 0);
   }, 0);
 
   const cost = basePriceTotal + offerPriceTotal;

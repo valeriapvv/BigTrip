@@ -20,12 +20,12 @@ export default class TripInfoPresenter {
     this.#tripInfoContainerSite = tripInfoContainerSite;
     this.#tripEventModel = tripEventModel;
 
-    this.#offers = this.#tripEventModel.offers;
     this.#tripEventModel.addObserver(this.#handleModelEvent);
   }
 
   init = () => {
     this.#tripEvents = this.#tripEventModel.tripEvents;
+    this.#offers = this.#tripEventModel.offers;
 
     this.#tripInfoComponent = new TripInfoSectionView();
     this.#tripInfoContainer = this.#tripInfoComponent.element;

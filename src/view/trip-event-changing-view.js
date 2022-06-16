@@ -1,10 +1,24 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {formatDate, findTypeOffers} from '../utils.js';
-import {defaultState} from '../data/trip-data-generation.js';
 import {PointMode, FormType} from '../data/constants.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
+import {nanoid} from 'nanoid';
+import dayjs from 'dayjs';
+
+const today = formatDate(dayjs());
+
+const defaultState = (destination) => ({
+  'basePrice': 200,
+  'dateFrom': today,
+  'dateTo': today,
+  'destination': destination || null,
+  'id': nanoid(),
+  'isFavorite': false,
+  'offers': [],
+  'type': 'taxi'
+});
 
 const createEventTypeSelectTemplate = (eventType, allTypes) =>  allTypes.map((it) => (
   `<div class="event__type-item">
@@ -111,7 +125,7 @@ const createTripEventChangingTemplate = (tripEvent, allOffers, destinations, for
               <span class="visually-hidden">Price</span>
                       &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price"  max="2000" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price"  min="0" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -155,7 +169,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
   constructor(tripEvent, allOffers, destinations, formType = FormType.EDIT) {
     super();
-    this.#tripEvent = tripEvent ?? defaultState;
+    this.#tripEvent = tripEvent ?? defaultState(destinations[0]);
     this._state = {...this.#tripEvent};
     this.#destinations = destinations;
     this.#offers = allOffers;
