@@ -9,7 +9,12 @@ import {render, remove} from '../framework/render.js';
 import {sortByDay, sortByTime, sortByPrice} from '../utils.js';
 import {SortType, UpdateType, UserAction, FilterType} from '../data/constants.js';
 import {filter} from '../filter.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
+const TimeLimit = {
+  LOWER_LIMIT: 300,
+  UPPER_LIMIT: 1000,
+};
 
 export default class TripEventsBodyPresenter {
   #tripEventsBodyContainer = null;
@@ -29,6 +34,8 @@ export default class TripEventsBodyPresenter {
   #noPointsMessageComponent = null;
   #loadingMessageComponent = null;
   #isLoading = true;
+
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(tripEventsBodyContainer, tripEventsModel, tripFiltersModel) {
     this.#tripEventsBodyContainer = tripEventsBodyContainer;
@@ -71,7 +78,6 @@ export default class TripEventsBodyPresenter {
       remove(this.#noPointsMessageComponent);
       this.#noPointsMessageComponent = null;
 
-      this.#renderSort();
       render(this.#tripEventListComponent, this.#tripEventsBodyContainer);
     }
 
@@ -163,18 +169,42 @@ export default class TripEventsBodyPresenter {
     this.#tripEventPresenter.set(tripEvent.id, point);
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE:
-        this.#tripEventsModel.updateTripEvent(updateType, update);
+        this.#tripEventPresenter.get(update.id).setSaving();
+
+        try {
+          await this.#tripEventsModel.updateTripEvent(updateType, update);
+        } catch (err) {
+          this.#tripEventPresenter.get(update.id).setErrorAction();
+        }
         break;
+
       case UserAction.ADD:
-        this.#tripEventsModel.addTripEvent(updateType, update);
+        this.#newPointPresenter.setSaving();
+
+        try {
+          await this.#tripEventsModel.addTripEvent(updateType, update);
+        } catch (err) {
+          this.#newPointPresenter.setErrorAction();
+        }
         break;
+
       case UserAction.DELETE:
-        this.#tripEventsModel.deleteTripEvent(updateType, update);
+        this.#tripEventPresenter.get(update.id).setDeleting();
+
+        try {
+          await this.#tripEventsModel.deleteTripEvent(updateType, update);
+        } catch (err) {
+          this.#tripEventPresenter.get(update.id).setErrorAction();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, update) => {

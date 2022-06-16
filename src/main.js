@@ -9,24 +9,22 @@ const tripMainSite = document.querySelector('.trip-main');
 const tripFiltersSite = tripMainSite.querySelector('.trip-controls__filters');
 const tripEventsBodySite = document.querySelector('.trip-events');
 
-const AUTHORIZATION = 'Basic ybzNk0dk32LkdjkbK';
+const AUTHORIZATION = 'Basic ybzertthlkjLkdjkbK';
 const END_POINT = 'https://17.ecmascript.pages.academy/big-trip';
 
 const tripEventsModel = new TripEventsModel(new TripEventsApiService(END_POINT ,AUTHORIZATION));
 const tripFiltersModel = new TripFiltersModel();
 
 const tripInfoPresenter = new TripInfoPresenter(tripMainSite, tripEventsModel);
-
-tripInfoPresenter.init();
-
-
 const tripEventsBodyPresenter = new TripEventsBodyPresenter(tripEventsBodySite, tripEventsModel, tripFiltersModel);
 const tripFiltersPresenter = new TripFiltersPresenter(tripEventsModel, tripFiltersModel, tripFiltersSite);
 
+tripInfoPresenter.init();
 
 tripFiltersPresenter.init();
 
 tripEventsBodyPresenter.init();
+
 tripEventsModel.init();
 
 

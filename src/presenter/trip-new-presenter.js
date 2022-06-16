@@ -11,7 +11,7 @@ export default class TripNewPresenter {
   #offers = null;
 
   constructor(tripEventListComponent, changeData) {
-    this.#tripEventListComponent= tripEventListComponent;
+    this.#tripEventListComponent = tripEventListComponent;
     this.#changeData = changeData;
   }
 
@@ -41,13 +41,29 @@ export default class TripNewPresenter {
     this.#formComponent = null;
   };
 
+  setSaving = () => {
+    this.#formComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setErrorAction = () => {
+    const enableForm = () => {
+      this.#formComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
+
+    this.#formComponent.shake(enableForm);
+  };
+
   #formSubmitHandler = (point) => {
     this.#changeData(
       UserAction.ADD,
       UpdateType.MINOR,
       point,
     );
-
-    this.destroy();
   };
 }

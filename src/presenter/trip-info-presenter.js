@@ -25,6 +25,11 @@ export default class TripInfoPresenter {
 
   init = () => {
     this.#tripEvents = this.#tripEventModel.tripEvents;
+
+    if (!this.#tripEvents.length) {
+      return;
+    }
+
     this.#offers = this.#tripEventModel.offers;
 
     this.#tripInfoComponent = new TripInfoSectionView();

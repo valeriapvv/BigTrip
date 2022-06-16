@@ -46,12 +46,14 @@ export default class TripEventPresenter {
       return;
     }
 
-    if (this.#pointsContainer.contains(prevPointComponent.element)) {
+    if (this.#mode === PointMode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if(this.#pointsContainer.contains(prevFormComponent.element)) {
-      replace(this.#formComponent, prevFormComponent);
+    if (this.#mode === PointMode.EDITING) {
+      replace(this.#pointComponent, prevFormComponent);
+      this.#mode = PointMode.DEFAULT;
+      this.#formComponent.mode = PointMode.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -95,7 +97,6 @@ export default class TripEventPresenter {
         break;
     }
 
-    this.#replaceFormToPoint();
     this.#changeData(
       UserAction.UPDATE,
       UpdateType[
@@ -131,6 +132,41 @@ export default class TripEventPresenter {
       this.#formComponent.reset(this.#tripEvent);
       this.#replaceFormToPoint();
     }
+  };
+
+  setSaving = () => {
+    if (this.#mode === PointMode.EDITING) {
+      this.#formComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  };
+
+  setDeleting = () => {
+    if (this.#mode === PointMode.EDITING) {
+      this.#formComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  };
+
+  setErrorAction = () => {
+    if (this.#mode === PointMode.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const enableForm = () => {
+      this.#formComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#formComponent.shake(enableForm);
   };
 
   destroy = () => {
