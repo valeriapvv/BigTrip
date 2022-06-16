@@ -4,7 +4,6 @@ import {PointMode, FormType} from '../data/constants.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
-import {nanoid} from 'nanoid';
 import dayjs from 'dayjs';
 
 const today = formatDate(dayjs());
@@ -14,7 +13,7 @@ const defaultState = (destination) => ({
   'dateFrom': today,
   'dateTo': today,
   'destination': destination || null,
-  'id': nanoid(),
+  'id': null,
   'isFavorite': false,
   'offers': [],
   'type': 'taxi'

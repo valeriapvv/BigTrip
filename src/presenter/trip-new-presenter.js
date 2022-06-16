@@ -1,7 +1,6 @@
 import TripEventChangingView from '../view/trip-event-changing-view.js';
 import {render, remove, RenderPosition} from '../framework/render.js';
 import {UpdateType, UserAction, PointMode, FormType} from '../data/constants.js';
-import {nanoid} from 'nanoid';
 
 export default class TripNewPresenter {
   #tripEventListComponent = null;
@@ -46,7 +45,7 @@ export default class TripNewPresenter {
     this.#changeData(
       UserAction.ADD,
       UpdateType.MINOR,
-      {...point, id: nanoid()},
+      point,
     );
 
     this.destroy();

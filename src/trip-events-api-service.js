@@ -3,6 +3,8 @@ import ApiService from './framework/api-service.js';
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  DELETE: 'DELETE',
+  POST: 'POST',
 };
 
 export default class TripEventsApiService extends ApiService {
@@ -34,12 +36,36 @@ export default class TripEventsApiService extends ApiService {
     return parsedResponse;
   };
 
+  deleteTripEvent = async (point) => {
+    const responce = await this._load({
+      url: `points/${point.id}`,
+      method: Method.DELETE,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    return responce;
+  };
+
+  addTripEvent = async (point) => {
+    const responce = await this._load({
+      url: 'points',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(responce);
+
+    return parsedResponse;
+  };
+
   #adaptToServer = (point) => {
     const adaptedPoint = {...point,
       'base_price': point.basePrice,
       'date_from': point.dateFrom,
       'date_to': point.dateTo,
-      'is_favotite': point.isFavorite,
+      'is_favorite': point.isFavorite,
     };
 
     delete adaptedPoint.basePrice;

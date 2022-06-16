@@ -1,17 +1,9 @@
 import Observable from '../framework/observable.js';
 import {UpdateType} from '../data/constants.js';
-// import {generatePoint, destinations, offers} from '../data/trip-data-generation.js';
 
 export default class TripEventsModel extends Observable {
   #tripEventsApiService = null;
-  // #tripEvents = (() => {
-  //   let id = 0;
 
-  //   return Array.from({length: 10}, () => generatePoint(++id));
-  // })();
-
-  // #destinations = destinations;
-  // #offers = offers;
   #tripEvents = [];
   #destinations = [];
   #offers = [];
@@ -81,21 +73,30 @@ export default class TripEventsModel extends Observable {
     }
   };
 
-  addTripEvent = (updateType, update) => {
-    this.#tripEvents = [update, ...this.#tripEvents];
-
-    this._notify(updateType, update);
-  };
-
-  deleteTripEvent = (updateType, update) => {
+  deleteTripEvent = async (updateType, update) => {
     const index = this.#tripEvents.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Невозможно удалить несуществующую точку маршрута');
     }
 
-    this.#tripEvents = [...this.#tripEvents.slice(0, index), ...this.#tripEvents.slice(index + 1)];
+    try {
+      await this.#tripEventsApiService.deleteTripEvent(update);
+      this.#tripEvents = [...this.#tripEvents.slice(0, index), ...this.#tripEvents.slice(index + 1)];
+      this._notify(updateType);
+    } catch (err) {
+      throw new Error('Не удалось удалить точку маршрута');
+    }
+  };
 
-    this._notify(updateType);
+  addTripEvent = async (updateType, update) => {
+    try {
+      const responce = await this.#tripEventsApiService.addTripEvent(update);
+      const updatedPoint = this.#adaptToClient(responce);
+      this.#tripEvents = [updatedPoint, ...this.#tripEvents];
+      this._notify(updateType, updatedPoint);
+    } catch (err) {
+      throw new Error('Не удалось обновить данные');
+    }
   };
 }
