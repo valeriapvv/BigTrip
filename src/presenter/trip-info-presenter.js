@@ -27,14 +27,14 @@ export default class TripInfoPresenter {
     this.#tripEvents = this.#tripEventModel.tripEvents;
 
     if (!this.#tripEvents.length) {
+      if (this.#tripInfoTitleView ||  this.#tripInfoDatesView || this.#tripInfoCostView) {
+        this.#removeTripInfoElements();
+      }
+
       return;
     }
 
     this.#offers = this.#tripEventModel.offers;
-
-    this.#tripInfoComponent = new TripInfoSectionView();
-    this.#tripInfoContainer = this.#tripInfoComponent.element;
-    this.#mainTripInfoContainer = this.#tripInfoComponent.mainElement;
 
     const prevTitleView = this.#tripInfoTitleView;
     const prevDatesView = this.#tripInfoDatesView;
@@ -45,10 +45,15 @@ export default class TripInfoPresenter {
     this.#tripInfoCostView = new TripInfoCostView(this.#tripEvents, this.#offers);
 
     if (prevCostView === null || prevDatesView === null || prevTitleView === null) {
-      render(this.#tripInfoTitleView, this.#mainTripInfoContainer, RenderPosition.AFTERBEGIN);
-      render(this.#tripInfoDatesView, this.#mainTripInfoContainer, RenderPosition.BEFOREEND);
-      render(this.#tripInfoCostView, this.#tripInfoContainer, RenderPosition.BEFOREEND);
+      this.#tripInfoComponent = new TripInfoSectionView();
+      const tripInfoContainer = this.#tripInfoComponent.element;
+      const mainTripInfoContainer = this.#tripInfoComponent.mainElement;
+
+      render(this.#tripInfoTitleView, mainTripInfoContainer, RenderPosition.AFTERBEGIN);
+      render(this.#tripInfoDatesView, mainTripInfoContainer, RenderPosition.BEFOREEND);
+      render(this.#tripInfoCostView, tripInfoContainer, RenderPosition.BEFOREEND);
       render(this.#tripInfoComponent, this.#tripInfoContainerSite, RenderPosition.AFTERBEGIN);
+
       return;
     }
 
@@ -59,6 +64,20 @@ export default class TripInfoPresenter {
     remove(prevTitleView);
     remove(prevDatesView);
     remove(prevCostView);
+  };
+
+  #removeTripInfoElements = () => {
+    remove(this.#tripInfoComponent);
+    this.#tripInfoComponent = null;
+
+    remove (this.#tripInfoTitleView);
+    this.#tripInfoTitleView = null;
+
+    remove (this.#tripInfoDatesView);
+    this.#tripInfoDatesView = null;
+
+    remove(this.#tripInfoCostView);
+    this.#tripInfoCostView = null;
   };
 
   #handleModelEvent = () => {

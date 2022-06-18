@@ -88,10 +88,6 @@ export default class TripEventsBodyPresenter {
         this.#addButtonComponent.element.disabled = false;
 
         if (!this.tripEvents.length) {
-          this.#currentSortType = SortType.DAY;
-          remove(this.#tripSortComponent);
-          this.#tripSortComponent = null;
-
           this.#renderNoPointsMessage();
         }
       },
@@ -99,6 +95,9 @@ export default class TripEventsBodyPresenter {
   };
 
   #renderItinerary = () => {
+    this.#destinations = this.#tripEventsModel.destinations;
+    this.#offers = this.#tripEventsModel.offers;
+
     if (this.#isLoading) {
       this.#renderLoadingMessage();
       return;
@@ -112,9 +111,6 @@ export default class TripEventsBodyPresenter {
     if (this.#tripSortComponent === null) {
       this.#renderSort();
     }
-
-    this.#destinations = this.#tripEventsModel.destinations;
-    this.#offers = this.#tripEventsModel.offers;
 
     this.#renderTripEvents(this.tripEvents);
   };
