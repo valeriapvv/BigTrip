@@ -46,14 +46,16 @@ export default class TripEventPresenter {
       return;
     }
 
-    if (this.#mode === PointMode.DEFAULT) {
-      replace(this.#pointComponent, prevPointComponent);
-    }
+    switch (this.#mode) {
+      case PointMode.DEFAULT:
+        replace(this.#pointComponent, prevPointComponent);
+        break;
 
-    if (this.#mode === PointMode.EDITING) {
-      replace(this.#pointComponent, prevFormComponent);
-      this.#mode = PointMode.DEFAULT;
-      this.#formComponent.mode = PointMode.DEFAULT;
+      case PointMode.EDITING:
+        replace(this.#pointComponent, prevFormComponent);
+        this.#mode = PointMode.DEFAULT;
+        this.#formComponent.mode = PointMode.DEFAULT;
+        break;
     }
 
     remove(prevPointComponent);

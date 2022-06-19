@@ -29,19 +29,22 @@ export default class TripEventsModel extends Observable {
     try {
       const points = await this.#tripEventsApiService.tripEvents;
       this.#tripEvents = points.map(this.#adaptToClient);
-      this.#destinations = (await this.#tripEventsApiService.destinations).slice();
+      this.#destinations = await this.#tripEventsApiService.destinations;
       this.#offers = await this.#tripEventsApiService.offers;
     } catch {
       this.#tripEvents = [];
       this.#destinations = [];
       this.#offers = [];
+
+      throw new Error('Не удалось загрузить данные');
     }
 
     this._notify(UpdateType.INIT);
   };
 
   #adaptToClient = (point) => {
-    const adaptedPoint = {...point,
+    const adaptedPoint = {
+      ...point,
       basePrice: point.base_price,
       dateFrom: point.date_from,
       dateTo: point.date_to,
@@ -63,14 +66,10 @@ export default class TripEventsModel extends Observable {
       throw new Error('Невозможно обновить несуществующую точку маршрута');
     }
 
-    try {
-      const responce = await this.#tripEventsApiService.updateTripEvent(update);
-      const updatedPoint = this.#adaptToClient(responce);
-      this.#tripEvents = [...this.#tripEvents.slice(0, index), updatedPoint, ...this.#tripEvents.slice(index + 1)];
-      this._notify(updateType, updatedPoint);
-    } catch (err) {
-      throw new Error('Не удалось обновить данные');
-    }
+    const responce = await this.#tripEventsApiService.updateTripEvent(update);
+    const updatedPoint = this.#adaptToClient(responce);
+    this.#tripEvents = [...this.#tripEvents.slice(0, index), updatedPoint, ...this.#tripEvents.slice(index + 1)];
+    this._notify(updateType, updatedPoint);
   };
 
   deleteTripEvent = async (updateType, update) => {
@@ -80,23 +79,15 @@ export default class TripEventsModel extends Observable {
       throw new Error('Невозможно удалить несуществующую точку маршрута');
     }
 
-    try {
-      await this.#tripEventsApiService.deleteTripEvent(update);
-      this.#tripEvents = [...this.#tripEvents.slice(0, index), ...this.#tripEvents.slice(index + 1)];
-      this._notify(updateType);
-    } catch (err) {
-      throw new Error('Не удалось удалить точку маршрута');
-    }
+    await this.#tripEventsApiService.deleteTripEvent(update);
+    this.#tripEvents = [...this.#tripEvents.slice(0, index), ...this.#tripEvents.slice(index + 1)];
+    this._notify(updateType);
   };
 
   addTripEvent = async (updateType, update) => {
-    try {
-      const responce = await this.#tripEventsApiService.addTripEvent(update);
-      const updatedPoint = this.#adaptToClient(responce);
-      this.#tripEvents = [updatedPoint, ...this.#tripEvents];
-      this._notify(updateType, updatedPoint);
-    } catch (err) {
-      throw new Error('Не удалось обновить данные');
-    }
+    const responce = await this.#tripEventsApiService.addTripEvent(update);
+    const updatedPoint = this.#adaptToClient(responce);
+    this.#tripEvents = [updatedPoint, ...this.#tripEvents];
+    this._notify(updateType, updatedPoint);
   };
 }
