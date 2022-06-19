@@ -1,7 +1,6 @@
 import TripEventChangingView from '../view/trip-event-changing-view.js';
 import {render, remove, RenderPosition} from '../framework/render.js';
 import {UpdateType, UserAction, PointMode, FormType} from '../data/constants.js';
-import {nanoid} from 'nanoid';
 
 export default class TripNewPresenter {
   #tripEventListComponent = null;
@@ -12,7 +11,7 @@ export default class TripNewPresenter {
   #offers = null;
 
   constructor(tripEventListComponent, changeData) {
-    this.#tripEventListComponent= tripEventListComponent;
+    this.#tripEventListComponent = tripEventListComponent;
     this.#changeData = changeData;
   }
 
@@ -42,13 +41,29 @@ export default class TripNewPresenter {
     this.#formComponent = null;
   };
 
+  setSaving = () => {
+    this.#formComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setErrorAction = () => {
+    const enableForm = () => {
+      this.#formComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
+
+    this.#formComponent.shake(enableForm);
+  };
+
   #formSubmitHandler = (point) => {
     this.#changeData(
       UserAction.ADD,
       UpdateType.MINOR,
-      {...point, id: nanoid()},
+      point,
     );
-
-    this.destroy();
   };
 }

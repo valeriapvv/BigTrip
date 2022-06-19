@@ -1,25 +1,3 @@
-const TYPES = [
-  'taxi',
-  'bus',
-  'train',
-  'ship',
-  'drive',
-  'flight',
-  'check-in',
-  'sightseeing',
-  'restaurant',
-];
-
-const POINTS = [
-  'Reykjavík',
-  'Kópavogur',
-  'Hafnarfjörður',
-  'Reykjanesbær',
-  'Akureyri',
-  'Garðabær',
-  'Mosfellsbær',
-];
-
 const PointMode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
@@ -46,6 +24,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const UserAction = {
@@ -54,4 +33,4 @@ const UserAction = {
   DELETE: 'DELETE',
 };
 
-export {TYPES, POINTS, PointMode, FormType, FilterType, SortType, UpdateType, UserAction};
+export {PointMode, FormType, FilterType, SortType, UpdateType, UserAction};
