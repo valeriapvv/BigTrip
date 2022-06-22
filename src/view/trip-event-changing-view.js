@@ -182,6 +182,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
   #typeInputsContainer = null;
   #offersContainer = null;
   #priceInput = null;
+  #dateToInput = null;
   #datepickerFrom = null;
   #datepickerTo = null;
   mode = PointMode.DEFAULT;
@@ -262,40 +263,82 @@ export default class TripEventChangingView extends AbstractStatefulView {
         defaultDate: this._state.dateFrom,
         altInput: true,
         altFormat: 'd/m/y H:i',
-        onClose: this.#dateFromChangeHandler,
+        onChange: this.#dateFromChangeHandler,
       },
     );
 
+    this.#dateToInput = this.element.querySelector('input[name="event-end-time"]');
     this.#datepickerTo = flatpickr(
-      this.element.querySelector('input[name="event-end-time"]'),
+      this.#dateToInput,
       {
         enableTime: true,
         defaultDate: this._state.dateTo,
         altFormat: 'd/m/y H:i',
         altInput: true,
-        onClose: this.#dateToChangeHandler,
+        onChange: this.#dateToChangeHandler,
+        minDate: this._state.dateFrom,
       },
     );
   };
 
   #dateFromChangeHandler = ([newDate]) => {
-    this.updateElement({dateFrom: formatDate(newDate)});
+    newDate = formatDate(newDate);
+    const isFromAfterTo = dayjs(newDate)
+      .isAfter(dayjs(this._state.dateTo), 'minute');
+
+    this._state.dateFrom = newDate;
+
+    if (isFromAfterTo) {
+      this._state.dateTo = newDate;
+      this.#reloadDatepickerTo();
+      return;
+    }
+
+    this.#datepickerTo.set('minDate', newDate);
+  };
+
+  #reloadDatepickerTo = () => {
+    this.#datepickerTo.destroy();
+
+    this.#datepickerTo = flatpickr(
+      this.#dateToInput,
+      {
+        enableTime: true,
+        defaultDate: this._state.dateTo,
+        altFormat: 'd/m/y H:i',
+        altInput: true,
+        onChange: this.#dateToChangeHandler,
+        minDate: this._state.dateFrom,
+      },
+    );
   };
 
   #dateToChangeHandler = ([newDate]) => {
-    this.updateElement({dateTo: formatDate(newDate)});
+    this._state.dateTo = newDate;
   };
 
   #setDestinationChangeHandler = () => {
     this.#destinationInput = this.element.querySelector('input[name="event-destination"]');
-    this.#destinationInput.addEventListener('change', this.#destinationChangeHandler);
+    this.#destinationInput.addEventListener('input', this.#destinationChangeHandler);
   };
 
   #destinationChangeHandler = (evt) => {
     const name = evt.target.value;
     const newDestination = this.#destinations.find((it) => it.name === name);
+    const isValidPrevDestination = this.#destinations.some(
+      (it) => it.name === this._state.destination.name
+    );
 
-    this.updateElement({destination: newDestination || {name}});
+    const needToUpdate = !!(newDestination || isValidPrevDestination);
+
+    if (needToUpdate) {
+      this.updateElement({destination: newDestination || {name}});
+      this.#destinationInput.focus();
+      this.#destinationInput.setSelectionRange(name.length, name.length);
+      return;
+    }
+
+    this._state.destination = {name};
   };
 
   #setTypeChangeHandler = () => {
@@ -333,7 +376,7 @@ export default class TripEventChangingView extends AbstractStatefulView {
   };
 
   #priceChangeHandler = (evt) => {
-    this.updateElement({basePrice: parseInt(evt.target.value, 10)});
+    this._state.basePrice = parseInt(evt.target.value, 10);
   };
 
 
