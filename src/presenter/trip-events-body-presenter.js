@@ -3,6 +3,7 @@ import TripEventListView from '../view/trip-event-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
 import EmptyTripListMessageView from '../view/empty-trip-list-message-view.js';
 import LoadingMessageView from '../view/loading-message-view.js';
+import FailedToLoadMessageView from '../view/failed-to-load-message.js';
 import AddButtonView from '../view/add-button-view.js';
 import TripNewPresenter from './trip-new-presenter';
 import {render, remove} from '../framework/render.js';
@@ -34,6 +35,8 @@ export default class TripEventsBodyPresenter {
   #noPointsMessageComponent = null;
   #loadingMessageComponent = null;
   #isLoading = true;
+
+  #failMessageComponent = null;
 
   #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
@@ -220,6 +223,12 @@ export default class TripEventsBodyPresenter {
         this.#isLoading = false;
         remove(this.#loadingMessageComponent);
         this.#loadingMessageComponent = null;
+
+        if (!this.#tripEventsModel.destinations.length || !this.#tripEventsModel.offers.length) {
+          this.#failMessageComponent = new FailedToLoadMessageView();
+          render(this.#failMessageComponent, this.#tripEventsBodyContainer);
+          return;
+        }
 
         this.#addButtonComponent.element.disabled = false;
         this.#addButtonComponent.setClickHandler(this.#createNewPoint);

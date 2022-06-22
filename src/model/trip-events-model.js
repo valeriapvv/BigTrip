@@ -37,9 +37,9 @@ export default class TripEventsModel extends Observable {
       this.#offers = [];
 
       throw new Error('Не удалось загрузить данные');
+    } finally {
+      this._notify(UpdateType.INIT);
     }
-
-    this._notify(UpdateType.INIT);
   };
 
   #adaptToClient = (point) => {
