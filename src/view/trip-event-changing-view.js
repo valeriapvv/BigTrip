@@ -401,7 +401,6 @@ export default class TripEventChangingView extends AbstractStatefulView {
 
   #onEscapeKeydown = (evt) => {
     if (evt.code === 'Escape' || evt.key === 'Escape') {
-      // evt.preventDefault();
       this.reset(this.#tripEvent);
 
       this._callback.onKeydown();
