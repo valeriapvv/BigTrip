@@ -10,6 +10,7 @@ export default class AddButtonView {
   setClickHandler = (callback) => {
     this.#element.addEventListener('click', () => {
       this.#element.disabled = true;
+      this.#element.blur();
       callback();
     });
   };

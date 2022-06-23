@@ -1,12 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import {sortByDay} from '../utils.js';
 
 const createTripInfoTitleTemplate = (tripEvents) => {
-  const points = tripEvents.map(({destination}) => destination.name);
-  points.forEach((it, index) => {
-    if (points[index-1] === it) {
-      points.splice(index, 1);
-    }
-  });
+  const points = tripEvents.sort(sortByDay).map(({destination}) => destination.name);
 
   const taskPath = `${points.length <= 3 ? points.join(' &mdash; ')
     : `${points[0]  } &mdash; . . . &mdash; ${  points[points.length - 1]}`}`;
